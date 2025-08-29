@@ -1,17 +1,24 @@
 ﻿using System.Collections;
+using Microsoft.VisualBasic.FileIO;
 
-using (var reader = new StreamReader(@"C:\Users\peter\Documents\ITU\3. Semester\BDSA\Chirp.CLI\data\chirp_cli_db.csv"))
+using (var parser = new TextFieldParser(@"C:\Users\peter\Documents\ITU\3. Semester\BDSA\Chirp.CLI\data\chirp_cli_db.csv"))
 {
     var chirps = new ArrayList();
+    parser.TextFieldType = FieldType.Delimited;
+    parser.SetDelimiters(",");
     
-    while (!reader.EndOfStream)
+    while (!parser.EndOfData)
     {
-        chirps.Add(reader.ReadLine());
+        string[] fields = parser.ReadFields();
+        chirps.Add(fields);
     }
+    chirps.RemoveAt(0);
 
-    foreach (var chirp in chirps)
+    foreach (string[] chirp in chirps)
     {
-        var input = chirp.ToString().Split(',');
-        Console.WriteLine(chirp);
+        var author      = chirp[0];
+        var message   = chirp[1];
+        var timestamp  = DateTimeOffset.FromUnixTimeSeconds(long.Parse(chirp[2]));
+        Console.WriteLine($"{author} @ {timestamp.LocalDateTime}: {message}");
     }
 }
