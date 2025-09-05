@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Microsoft.VisualBasic.FileIO;
+using Chirp.CLI.Client;
 
 public class Program
 {
@@ -15,11 +16,12 @@ public class Program
         }
         else
         {
-            Read(path);
+            var cheeps = Read(path);
+            UserInterface.PrintCheeps(cheeps);
         }
     }
 
-    public static void Read(string path)
+    public static IEnumerable<Cheep> Read(string path)
     {
         using (var parser = new TextFieldParser(path))
         {
@@ -29,18 +31,24 @@ public class Program
     
             while (!parser.EndOfData)
             {
-                string[] fields = parser.ReadFields();
-                chirps.Add(fields);
+                string[]? fields = parser.ReadFields();
+                if (fields != null)
+                {
+                    chirps.Add(fields);
+                }
             }
             chirps.RemoveAt(0);
 
+            var cheeps = new List<Cheep>();
             foreach (string[] chirp in chirps)
             {
-                var author      = chirp[0];
-                var message   = chirp[1];
-                var timestamp  = DateTimeOffset.FromUnixTimeSeconds(long.Parse(chirp[2]));
-                Console.WriteLine($"{author} @ {timestamp.LocalDateTime}: {message}");
+                var author = chirp[0];
+                var message = chirp[1];
+                var timestamp = DateTimeOffset.FromUnixTimeSeconds(long.Parse(chirp[2]));
+                cheeps.Add(new Cheep(author, message, timestamp));
             }
+            
+            return cheeps;
         }
     }
     public static void Cheep(string path, string message)
