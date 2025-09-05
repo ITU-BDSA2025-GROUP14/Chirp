@@ -1,4 +1,12 @@
 ﻿using System.Collections;
+using System.Globalization;
+using System.Net.Mime;
+
+using Chirp.CLI;
+
+using CsvHelper;
+using CsvHelper.Configuration;
+
 using Microsoft.VisualBasic.FileIO;
 
 public class Program
@@ -6,56 +14,58 @@ public class Program
     public static void Main(string[] args)
     {
         var path = "data/chirp_cli_db.csv";
+        Console.WriteLine();
+        
         if (args.Length > 1)
         {
-             if (args[0].ToLower().Equals("cheep"))
-             {
+            if (args[0].ToLower().Equals("cheep"))
+            {
                 Cheep(path, args[1]);
-             }
-        }
-        else
-        {
-            Read(path);
+            }
         }
     }
 
-    public static void Read(string path)
+    static public void reader(string path)
     {
-        using (var parser = new TextFieldParser(path))
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            var chirps = new ArrayList();
-            parser.TextFieldType = FieldType.Delimited;
-            parser.SetDelimiters(",");
-    
-            while (!parser.EndOfData)
+            PrepareHeaderForMatch = args => args.Header.ToLower(),
+        };
+        using (var reader = new StreamReader(path))
+        using (var csv = new CsvReader(reader, config))
+        {   
+            csv.Context.RegisterClassMap<CheepMap>();
+            var records = csv.GetRecords<Cheep>();
+            csv.Read();
+            csv.ReadHeader();
+            while (csv.Read())
             {
-                string[] fields = parser.ReadFields();
-                chirps.Add(fields);
+                var timestamp = DateTimeOffset.FromUnixTimeSeconds(long.Parse(csv.GetField("timestamp")));
+                Console.WriteLine($"{csv.GetField("author")} @ {timestamp.LocalDateTime}: {csv.GetField("message")}");
             }
-            chirps.RemoveAt(0);
+        }
+    }
 
-            foreach (string[] chirp in chirps)
+    static public void writer(string path, string message)
+    {
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false, };
+        var records = new List<Cheep>
+        {
+            new Cheep
             {
-                var author      = chirp[0];
-                var message   = chirp[1];
-                var timestamp  = DateTimeOffset.FromUnixTimeSeconds(long.Parse(chirp[2]));
-                Console.WriteLine($"{author} @ {timestamp.LocalDateTime}: {message}");
+                author = Environment.UserName, message = message, timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
             }
+        };
+        using (var stream = File.Open(path, FileMode.Append))
+        using (var writer = new StreamWriter(stream))
+        using (var csv = new CsvWriter(writer, config))
+        {
+            csv.WriteRecords(records);
         }
     }
     public static void Cheep(string path, string message)
     {
-        if (!File.Exists(path))
-        {
-            using (var writer = new StreamWriter(path))
-            {
-                writer.WriteLine($"Author,Message,Timestamp");
-            }
-        }
-
-        using (var writer = File.AppendText(path))
-        {
-            writer.WriteLine($"{Environment.UserName},\"{message}\",{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}");
-        }
+        writer(path, message);
+        reader(path);
     }
 }
