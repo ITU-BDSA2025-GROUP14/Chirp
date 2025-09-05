@@ -6,9 +6,7 @@ public static class UserInterface
     {
         foreach (var cheep in cheeps)
         {
-            Console.WriteLine($"{cheep.Author} @ {cheep.Timestamp.LocalDateTime}: {cheep.Message}");
+            Console.WriteLine($"{cheep.author} @ {cheep.timestamp}: {cheep.message}");
         }
     }
 }
-
-public record Cheep(string Author, string Message, DateTimeOffset Timestamp);
