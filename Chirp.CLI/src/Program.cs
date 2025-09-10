@@ -57,6 +57,7 @@ public class Program
     }
     private static void Cheep(string message)
     {
-        db.Store(new Cheep(Environment.MachineName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
+        Cheep cheep = new Cheep(Environment.MachineName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        db.Store(cheep);
     }
 }

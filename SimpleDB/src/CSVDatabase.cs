@@ -23,18 +23,19 @@ public class CSVDatabase<T>: IDatabaseRepository<T>
         var records = csv.GetRecords<T>();
         return records.ToList();
     }
-    
+
     public void Store(T record)
     {
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false, };
-        using var writer = new StreamWriter(_filePath);
-        using var csv = new CsvWriter(writer, config);
-        
-        if (!File.Exists(_filePath))
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-                writer.WriteLine($"Author,Message,Timestamp");
+            // Don't write the header again.
+            HasHeaderRecord = false,
+        };
+        using (var writer = new StreamWriter(_filePath, append: true))
+        using (var csv = new CsvWriter(writer, config))
+        {
+            csv.WriteRecord(record);
+            csv.NextRecord();
         }
-
-        csv.WriteRecord(record);
     }
 }
