@@ -6,6 +6,9 @@
 # dotenv files
 .env
 
+# GitHub configuration (local settings)
+.github/
+
 # User-specific files
 *.rsuser
 *.suo

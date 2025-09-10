@@ -6,8 +6,8 @@ public class CheepMap : ClassMap<Cheep>
 {
     public CheepMap()
     {
-        Map(m => m.author).Index(0).Name("author");
-        Map(m => m.message).Index(1).Name("message");
-        Map(m => m.timestamp).Index(2).Name("timestamp");
+        Map(m => m.Author).Index(0).Name("Author");
+        Map(m => m.Message).Index(1).Name("Message");
+        Map(m => m.Timestamp).Index(2).Name("Timestamp");
     }
 }

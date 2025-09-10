@@ -1,3 +1,5 @@
+using Chirp.CLI;
+
 namespace Chirp.CLI.Client;
 
 public static class UserInterface
@@ -6,7 +8,8 @@ public static class UserInterface
     {
         foreach (var cheep in cheeps)
         {
-            Console.WriteLine($"{cheep.author} @ {cheep.timestamp}: {cheep.message}");
+            var timestamp = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp);
+            Console.WriteLine($"{cheep.Author} @ {timestamp.LocalDateTime}: {cheep.Message}");
         }
     }
 }

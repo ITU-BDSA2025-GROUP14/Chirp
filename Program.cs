@@ -46,15 +46,18 @@ public class Program
         using (var reader = new StreamReader(path))
         using (var csv = new CsvReader(reader, config))
         {   
-            csv.Context.RegisterClassMap<CheepMap>();
-            var records = csv.GetRecords<Cheep>();
+            var records = new List<Cheep>();
             csv.Read();
             csv.ReadHeader();
+            
             while (csv.Read())
             {
-                var timestamp = DateTimeOffset.FromUnixTimeSeconds(long.Parse(csv.GetField("timestamp")));
-                Console.WriteLine($"{csv.GetField("author")} @ {timestamp.LocalDateTime}: {csv.GetField("message")}");
+                var author = csv.GetField("Author");
+                var message = csv.GetField("Message");
+                var timestamp = csv.GetField<long>("Timestamp");
+                records.Add(new Cheep(author, message, timestamp));
             }
+            
             UserInterface.PrintCheeps(records);
         }
         return 0;
@@ -71,10 +74,7 @@ public class Program
         var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false, };
         var records = new List<Cheep>
         {
-            new Cheep
-            {
-                author = Environment.UserName, message = message, timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
-            }
+            new Cheep(Environment.UserName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds())
         };
         if (!File.Exists(path))
         {
