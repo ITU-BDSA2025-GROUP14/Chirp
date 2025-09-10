@@ -26,6 +26,7 @@ public class CSVDatabase<T>: IDatabaseRepository<T>
 
     public void Store(T record)
     {
+        var fileInfo = new FileInfo(_filePath);
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             // Don't write the header again.
@@ -34,6 +35,11 @@ public class CSVDatabase<T>: IDatabaseRepository<T>
         using (var writer = new StreamWriter(_filePath, append: true))
         using (var csv = new CsvWriter(writer, config))
         {
+            if (!fileInfo.Exists || fileInfo.Length == 0)
+            {
+                csv.WriteHeader<T>();
+                csv.NextRecord();
+            }
             csv.WriteRecord(record);
             csv.NextRecord();
         }
