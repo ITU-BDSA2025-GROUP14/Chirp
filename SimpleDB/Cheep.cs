@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace Chirp.CLI;
+namespace SimpleDB;
 
 public record Cheep(
     [Name("Author")] string Author, 

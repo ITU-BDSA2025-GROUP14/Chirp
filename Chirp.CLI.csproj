@@ -12,14 +12,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="33.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="data\chirp_cli_db.csv" />
     <Content Include="data\chirp_cli_db.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="SimpleDB\SimpleDB.csproj" />
+  </ItemGroup>
+
+  <!-- This excludes SimpleDB from the build, since the cli project would otherwise try to compile both -->
+  <ItemGroup>
+    <Compile Remove="SimpleDB\**" />
+    <EmbeddedResource Remove="SimpleDB\**" />
+    <None Remove="SimpleDB\**" />
   </ItemGroup>
 
 </Project>

@@ -1,14 +1,6 @@
-﻿using System.Collections;
-using System.Globalization;
-
-using Chirp.CLI;
-
-using Microsoft.VisualBasic.FileIO;
-using Chirp.CLI.Client;
+﻿using Chirp.CLI.Client;
 using CommandLine;
-
-using CsvHelper;
-using CsvHelper.Configuration;
+using SimpleDB;
 
 // the options that are for the cheep command
 [Verb("cheep", HelpText = "Create a new cheep")]
@@ -27,68 +19,28 @@ public class ReadOptions
 
 public class Program
 {
+    private static readonly IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>("data/chirp_cli_db.csv");
+
     public static int Main(string[] args)
     {
-        var path = "data/chirp_cli_db.csv";
         return Parser.Default.ParseArguments<ReadOptions, CheepOptions>(args)
             .MapResult(
-                (ReadOptions opts) => RunRead(path),
-                (CheepOptions opts) => RunCheep(path, opts.Message),
+                (ReadOptions opts) => RunRead(),
+                (CheepOptions opts) => RunCheep(opts.Message),
                 errs => 1);
     }
 
-    static int RunRead(string path)
+    static int RunRead()
     {
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            PrepareHeaderForMatch = args => args.Header.ToLower(),
-        };
-        using (var reader = new StreamReader(path))
-        using (var csv = new CsvReader(reader, config))
-        {   
-            var records = new List<Cheep>();
-            csv.Read();
-            csv.ReadHeader();
-            
-            while (csv.Read())
-            {
-                var author = csv.GetField("Author");
-                var message = csv.GetField("Message");
-                var timestamp = csv.GetField<long>("Timestamp");
-                records.Add(new Cheep(author, message, timestamp));
-            }
-            
-            UserInterface.PrintCheeps(records);
-        }
+        var cheeps = database.Read(int.MaxValue);
+        UserInterface.PrintCheeps(cheeps);
         return 0;
     }
 
-    static int RunCheep(string path, string message)
+    static int RunCheep(string message)
     {
-        RunRead(path);
-        Cheep(path, message);
-        return 0;
-    }
-    public static void Cheep(string path, string message)
-    {
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HasHeaderRecord = false, };
-        var records = new List<Cheep>
-        {
-            new Cheep(Environment.UserName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds())
-        };
-        if (!File.Exists(path))
-        {
-            using (var writer = new StreamWriter(path))
-            {
-                writer.WriteLine($"Author,Message,Timestamp");
-            }
-        }
-
-        using (var stream = File.Open(path, FileMode.Append))
-        using (var writer = new StreamWriter(stream))
-        using (var csv = new CsvWriter(writer, config))
-        {
-            csv.WriteRecords(records);
-        }
+        var cheep = new Cheep(Environment.UserName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        database.Store(cheep);
+        return RunRead();
     }
 }

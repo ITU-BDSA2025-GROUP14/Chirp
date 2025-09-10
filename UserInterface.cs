@@ -1,4 +1,4 @@
-using Chirp.CLI;
+using SimpleDB;
 
 namespace Chirp.CLI.Client;
 

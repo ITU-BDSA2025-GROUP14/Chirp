@@ -1,6 +1,6 @@
 using CsvHelper.Configuration;
 
-namespace Chirp.CLI;
+namespace SimpleDB;
 
 public class CheepMap : ClassMap<Cheep>
 {
