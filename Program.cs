@@ -25,7 +25,7 @@ public class Program
     {
         return Parser.Default.ParseArguments<ReadOptions, CheepOptions>(args)
             .MapResult(
-                (ReadOptions opts) => RunRead(),q
+                (ReadOptions opts) => RunRead(),
                 (CheepOptions opts) => RunCheep(opts.Message),
                 errs => 1);
     }
