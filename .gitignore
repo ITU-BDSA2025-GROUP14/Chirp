@@ -6,8 +6,9 @@
 # dotenv files
 .env
 
-# GitHub configuration (local settings)
+# GitHub configuration (local settings) -- but allow workflows
 .github/
+!.github/workflows/
 
 # User-specific files
 *.rsuser
