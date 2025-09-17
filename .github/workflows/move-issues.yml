@@ -7,27 +7,17 @@ on:
 jobs:
   move_to_project_board:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      repository-projects: write
     steps:
-      - uses: konradpabjan/move-labeled-or-milestoned-issue@v2.0
+      - run: gh project item-add 1 --owner ITU-BDSA2025-GROUP14 --url ${{ github.event.issue.html_url }}
         if: github.event.action == 'labeled' && github.event.label.name == 'triage'
-        with:
-          action-token: "${{ secrets.GITHUB_TOKEN }}"
-          project-url: "https://github.com/orgs/ITU-BDSA2025-GROUP14/projects/1"
-          column-name: "Todo"
-          label-name: "triage"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      - uses: konradpabjan/move-labeled-or-milestoned-issue@v2.0
-        if: github.event.action == 'labeled' && github.event.label.name == 'in-progress'
-        with:
-          action-token: "${{ secrets.GITHUB_TOKEN }}"
-          project-url: "https://github.com/orgs/ITU-BDSA2025-GROUP14/projects/1"
-          column-name: "In Progress"
-          label-name: "in-progress"
-      
-      - uses: konradpabjan/move-labeled-or-milestoned-issue@v2.0
+      - run: gh issue edit ${{ github.event.issue.number }} --add-label "done"
         if: github.event.action == 'closed'
-        with:
-          action-token: "${{ secrets.GITHUB_TOKEN }}"
-          project-url: "https://github.com/orgs/ITU-BDSA2025-GROUP14/projects/1"
-          column-name: "Done"
-          label-name: "triage"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
