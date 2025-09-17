@@ -19,7 +19,7 @@ public class ReadOptions
 
 public class Program
 {
-    private static readonly IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>("data/chirp_cli_db.csv");
+    private static readonly IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>("../../data/chirp_cli_db.csv");
 
     public static int Main(string[] args)
     {
