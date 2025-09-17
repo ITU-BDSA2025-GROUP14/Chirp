@@ -12,14 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="data\chirp_cli_db.csv" />
-    <Content Include="data\chirp_cli_db.csv">
+    <None Remove="..\..\data\chirp_cli_db.csv" />
+    <Content Include="..\..\data\chirp_cli_db.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="SimpleDB\SimpleDB.csproj" />
+    <ProjectReference Include="..\SimpleDB\SimpleDB.csproj" />
   </ItemGroup>
 
   <!-- This excludes SimpleDB from the build, since the cli project would otherwise try to compile both -->
