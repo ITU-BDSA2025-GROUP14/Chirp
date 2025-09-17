@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="SimpleDB.csproj" />
     <ProjectReference Include="..\..\test\Chirp.CSVDB.Tests\Chirp.CSVDB.Tests.csproj" />
   </ItemGroup>
 
