@@ -7,10 +7,24 @@ namespace SimpleDB;
 public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 {
     private readonly string _filePath;
-
-    public CSVDatabase(string filePath)
+    private static CSVDatabase<T> _instance;
+    private CSVDatabase()
     {
-        _filePath = filePath;
+        _filePath = "../../data/chirp_cli_db.csv";
+    }
+    
+    /// <summary>
+    /// Singleton pattern handling only one instance of the CSVDatabase is active at once.
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
+    public static CSVDatabase<T> GetInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new CSVDatabase<T>();
+        }
+        return  _instance;
     }
 
     public IEnumerable<T> Read(int limit)
