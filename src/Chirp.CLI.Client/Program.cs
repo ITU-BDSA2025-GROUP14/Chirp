@@ -19,8 +19,7 @@ public class ReadOptions
 
 public class Program
 {
-    private static readonly IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>("../../data/chirp_cli_db.csv");
-
+    private static IDatabaseRepository<Cheep> database = CSVDatabase<Cheep>.GetInstance();
     public static int Main(string[] args)
     {
         return Parser.Default.ParseArguments<ReadOptions, CheepOptions>(args)
