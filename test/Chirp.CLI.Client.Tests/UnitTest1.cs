@@ -1,5 +1,4 @@
 using CommandLine;
-using SimpleDB;
 using Chirp.CLI.Client;
 using Xunit;
 namespace Chirp.CLI.Client.Tests;
