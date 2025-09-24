@@ -1,19 +1,27 @@
-using System.Data
+using System.Data;
+
+using Chirp.Razor;
 using Microsoft.Data.Sqlite;
+
+
+
 
 public record CheepViewModel(string Author, string Message, string Timestamp);
 
 public class CheepService
 {
-    // These would normally be loaded from a database for example
+    private DBFacade _connection = DBFacade.GetInstance();
+
+    //These would normally be loaded from a database for example
     private static readonly List<CheepViewModel> _cheeps = new()
-        {
-            new CheepViewModel("Helge", "Hello, BDSA students!", UnixTimeStampToDateTimeString(1690892208)),
-            new CheepViewModel("Rasmus", "Hej, velkommen til kurset.", UnixTimeStampToDateTimeString(1690895308)),
-        };
+    { 
+        new CheepViewModel("Helge", "Hello, BDSA students!", UnixTimeStampToDateTimeString(1690892208)),
+        new CheepViewModel("Rasmus", "Hej, velkommen til kurset.", UnixTimeStampToDateTimeString(1690895308)),
+    };
 
     public List<CheepViewModel> GetCheeps()
     {
+        //var _cheeps = _connection.getTimeline();
         return _cheeps;
     }
 
@@ -30,5 +38,6 @@ public class CheepService
         dateTime = dateTime.AddSeconds(unixTimeStamp);
         return dateTime.ToString("MM/dd/yy H:mm:ss");
     }
+    
 
 }
