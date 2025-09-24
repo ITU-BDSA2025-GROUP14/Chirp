@@ -1,6 +1,5 @@
-﻿using Chirp.CLI.Client;
+using Chirp.CLI.Client;
 using CommandLine;
-using SimpleDB;
 
 // the options that are for the cheep command
 [Verb("cheep", HelpText = "Create a new cheep")]
@@ -19,7 +18,7 @@ public class ReadOptions
 
 public class Program
 {
-    private static IDatabaseRepository<Cheep> database = CSVDatabase<Cheep>.GetInstance();
+    private static IDatabaseRepository<Cheep> database = new HttpDatabaseRepository();
     public static int Main(string[] args)
     {
         return Parser.Default.ParseArguments<ReadOptions, CheepOptions>(args)
