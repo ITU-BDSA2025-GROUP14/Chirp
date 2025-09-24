@@ -19,14 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleDB\SimpleDB.csproj" />
-  </ItemGroup>
-
-  <!-- This excludes SimpleDB from the build, since the cli project would otherwise try to compile both -->
-  <ItemGroup>
-    <Compile Remove="SimpleDB\**" />
-    <EmbeddedResource Remove="SimpleDB\**" />
-    <None Remove="SimpleDB\**" />
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
