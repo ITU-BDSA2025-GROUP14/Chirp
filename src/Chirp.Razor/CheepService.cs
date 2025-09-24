@@ -1,3 +1,6 @@
+using System.Data
+using Microsoft.Data.Sqlite;
+
 public record CheepViewModel(string Author, string Message, string Timestamp);
 
 public class CheepService
