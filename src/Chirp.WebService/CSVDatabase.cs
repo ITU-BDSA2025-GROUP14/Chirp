@@ -11,7 +11,10 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 
     private CSVDatabase()
     {
-        _filePath = "../../data/chirp_cli_db.csv";
+        // trying different paths to see if one is better for azure
+        _filePath = File.Exists("chirp_cli_db.csv")
+            ? "chirp_cli_db.csv"
+            : "../../data/chirp_cli_db.csv";
     }
 
     /// <summary>

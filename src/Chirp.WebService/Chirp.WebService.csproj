@@ -12,8 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="..\..\data\chirp_cli_db.csv" />
-    <Content Include="..\..\data\chirp_cli_db.csv">
+    <Content Include="chirp_cli_db.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
