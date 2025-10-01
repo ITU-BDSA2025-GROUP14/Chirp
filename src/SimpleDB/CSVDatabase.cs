@@ -10,7 +10,7 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
     private static CSVDatabase<T> _instance;
     private CSVDatabase()
     {
-        _filePath = "../../data/chirp_cli_db.csv";
+        _filePath = "data/chirp_cli_db.csv";
     }
     
     /// <summary>
