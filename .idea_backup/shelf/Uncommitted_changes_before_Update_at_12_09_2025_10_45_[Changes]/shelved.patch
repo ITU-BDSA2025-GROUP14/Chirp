@@ -1,0 +1,35 @@
+Index: Program.cs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>using Chirp.CLI.Client;\r\nusing CommandLine;\r\nusing SimpleDB;\r\n\r\n// the options that are for the cheep command\r\n[Verb(\"cheep\", HelpText = \"Create a new cheep\")]\r\npublic class CheepOptions\r\n{\r\n    [Value(0, MetaName = \"message\", Required = true, HelpText = \"The message to cheep\")]\r\n    public string Message { get; set; } = string.Empty;\r\n}\r\n\r\n// the options which are for the default read command (meaning no verb)\r\n[Verb(\"read\", isDefault: true, HelpText = \"Read and display all cheeps\")]\r\npublic class ReadOptions\r\n{\r\n    // no more additional options for read command needed\r\n}\r\n\r\npublic class Program\r\n{\r\n    private static readonly IDatabaseRepository<Cheep> database = new CSVDatabase<Cheep>(\"data/chirp_cli_db.csv\");\r\n\r\n    public static int Main(string[] args)\r\n    {\r\n        return Parser.Default.ParseArguments<ReadOptions, CheepOptions>(args)\r\n            .MapResult(\r\n                (ReadOptions opts) => RunRead(),\r\n                (CheepOptions opts) => RunCheep(opts.Message),\r\n                errs => 1);\r\n    }\r\n\r\n    static int RunRead()\r\n    {\r\n        var cheeps = database.Read(int.MaxValue);\r\n        UserInterface.PrintCheeps(cheeps);\r\n        return 0;\r\n    }\r\n\r\n    static int RunCheep(string message)\r\n    {\r\n        var cheep = new Cheep(Environment.UserName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds());\r\n        database.Store(cheep);\r\n        return RunRead();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Program.cs b/Program.cs
+--- a/Program.cs	(revision 94009551cb7bfd610d7a42e08d32a81e93131ffd)
++++ b/Program.cs	(date 1757665249351)
+@@ -25,7 +25,7 @@
+     {
+         return Parser.Default.ParseArguments<ReadOptions, CheepOptions>(args)
+             .MapResult(
+-                (ReadOptions opts) => RunRead(),
++                (ReadOptions opts) => RunRead(),q
+                 (CheepOptions opts) => RunCheep(opts.Message),
+                 errs => 1);
+     }
+Index: data/chirp_cli_db.csv
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>Author,Message,Timestamp\r\nropf,\"Hello, BDSA students!\",1690891760\r\nadho,\"Welcome to the course!\",1690978778\r\nadho,\"I hope you had a good summer.\",1690979858\r\nropf,\"Cheeping cheeps on Chirp :)\",1690981487\r\nsoren,\"Testing the refactored UI\",1757064350\r\nsoren,\"testing commandlineparser cli refactor ;D\",1757065781\r\npeter,hello,1757079480\r\npeter,hello,1757079511\r\npeter,hello,1757079515\r\npeter,hello,1757079521\r\npeter,hello,1757079528\r\npeter,hello,1757079533\r\nsoren,test test test,1757517438\r\nsoren,test123test123,1757520556\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data/chirp_cli_db.csv b/data/chirp_cli_db.csv
+--- a/data/chirp_cli_db.csv	(revision 94009551cb7bfd610d7a42e08d32a81e93131ffd)
++++ b/data/chirp_cli_db.csv	(date 1757552896478)
+@@ -13,3 +13,5 @@
+ peter,hello,1757079533
+ soren,test test test,1757517438
+ soren,test123test123,1757520556
++andre,yo,1757550054
++andre,<- this dude is so fukin cool,1757552739

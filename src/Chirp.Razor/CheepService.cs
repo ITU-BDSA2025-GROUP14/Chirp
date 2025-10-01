@@ -15,13 +15,12 @@ public class CheepService
     //These would normally be loaded from a database for example
     private static readonly List<CheepViewModel> _cheeps = new()
     { 
-        new CheepViewModel("Helge", "Hello, BDSA students!", UnixTimeStampToDateTimeString(1690892208)),
-        new CheepViewModel("Rasmus", "Hej, velkommen til kurset.", UnixTimeStampToDateTimeString(1690895308)),
     };
-
+   
+    
     public List<CheepViewModel> GetCheeps()
     {
-        //var _cheeps = _connection.getTimeline();
+        _cheeps.AddRange(_connection.getTimeline());
         return _cheeps;
     }
 
