@@ -4,9 +4,8 @@ using Microsoft.Data.Sqlite;
 
 public class DBFacade
 {
-
     private static DBFacade _instance;
-    private string sqlDBFilePath = "/tmp/chirp.db";
+    private string CHIRPDBPATH = Path.Combine(Path.GetTempPath(), "chirp.db");
     private DBFacade()
     {
 
@@ -24,7 +23,7 @@ public class DBFacade
     public void SaveMessage(string message)
     {
 
-        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={sqlDBFilePath}"))
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={CHIRPDBPATH}"))
         {
             connection.Open();
             var command = connection.CreateCommand();
@@ -33,10 +32,11 @@ public class DBFacade
         }
     }
 
-    public void getTimeline()
+    public List<CheepViewModel> getTimeline()
     {
-        string sqlQuery = @"SELECT * FROM message ORDER by message.pub_date desc";
-        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={sqlDBFilePath}"))
+        var cheeps = new List<CheepViewModel>();
+        string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id order by pub_date desc";
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={CHIRPDBPATH}"))
         {
             connection.Open();
             var command = connection.CreateCommand();
@@ -45,18 +45,14 @@ public class DBFacade
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                // https://learn.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqldatareader?view=dotnet-plat-ext-8.0#examples
-                var dataRecord = (IDataRecord)reader;
-                for (int i = 0; i < dataRecord.FieldCount; i++)
-                    Console.WriteLine($"{dataRecord.GetName(i)}: {dataRecord[i]}");
+                string author = reader.GetString(0);
+                string message = reader.GetString(1);
+                string date = reader.GetString(2);
 
-                // See https://learn.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqldatareader.getvalues?view=dotnet-plat-ext-8.0
-                // for documentation on how to retrieve complete columns from query results
-                Object[] values = new Object[reader.FieldCount];
-                int fieldCount = reader.GetValues(values);
-                for (int i = 0; i < fieldCount; i++)
-                    Console.WriteLine($"{reader.GetName(i)}: {values[i]}");
+                cheeps.Add(new CheepViewModel(author, message, date));
             }
         }
+
+        return cheeps;
     }
 }
