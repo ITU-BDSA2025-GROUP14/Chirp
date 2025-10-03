@@ -1,4 +1,4 @@
-name: Release
+  name: Release
 
 on:
   push:
@@ -19,22 +19,22 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore src/Chirp.CLI.Client/Chirp.CLI.csproj
+        run: dotnet restore src/Chirp.Razor/Chirp.Razor
 
       - name: Build
-        run: dotnet build src/Chirp.CLI.Client/Chirp.CLI.csproj --no-restore
+        run: dotnet build src/Chirp.Razor/Chirp.Razor --no-restore
 
       - name: Test
-        run: dotnet test src/Chirp.CLI.Client/Chirp.CLI.csproj --no-build --verbosity normal
+        run: dotnet test src/Chirp.Razor/Chirp.Razor --no-build --verbosity normal
 
       - name: Publish Windows
-        run: dotnet publish src/Chirp.CLI.Client/Chirp.CLI.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o ./publish/win-x64
+        run: dotnet publish src/Chirp.Razor/Chirp.Razor -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o ./publish/win-x64
 
       - name: Publish MacOS
-        run: dotnet publish src/Chirp.CLI.Client/Chirp.CLI.csproj -c Release -r osx-x64 --self-contained false -p:PublishSingleFile=true -o ./publish/osx-x64
+        run: dotnet publish src/Chirp.Razor/Chirp.Razor -c Release -r osx-x64 --self-contained false -p:PublishSingleFile=true -o ./publish/osx-x64
 
       - name: Publish Linux
-        run: dotnet publish src/Chirp.CLI.Client/Chirp.CLI.csproj -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o ./publish/linux-x64
+        run: dotnet publish src/Chirp.Razor/Chirp.Razor -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o ./publish/linux-x64
 
       - name: Create Windows ZIP
         run: cd ./publish/win-x64 && zip -r ../../Chirp-win-x64.zip .
