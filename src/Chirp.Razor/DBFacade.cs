@@ -5,10 +5,21 @@ using Microsoft.Data.Sqlite;
 public class DBFacade
 {
     private static DBFacade _instance;
-    private string CHIRPDBPATH = Path.Combine(Path.GetTempPath(), "chirp.db");
+    
+    public static string GetConnectionString()
+    {
+        string envVarPath = Environment.GetEnvironmentVariable("CHIRPDBPATH");
+        if (!String.IsNullOrEmpty(envVarPath))
+        {
+            return envVarPath;
+        }
+        
+        string tempDir = Path.GetTempPath();
+        return Path.Combine(tempDir, "chirp.db");
+    }
+    
     private DBFacade()
     {
-
     }
 
     public static DBFacade GetInstance()
@@ -22,13 +33,11 @@ public class DBFacade
 
     public void SaveMessage(string message)
     {
-
-        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={CHIRPDBPATH}"))
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
         {
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = message;
-            
         }
     }
 
@@ -36,7 +45,7 @@ public class DBFacade
     {
         var cheeps = new List<CheepViewModel>();
         string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id order by pub_date desc";
-        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={CHIRPDBPATH}"))
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
         {
             connection.Open();
             var command = connection.CreateCommand();
@@ -45,14 +54,23 @@ public class DBFacade
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
+                
                 string author = reader.GetString(0);
                 string message = reader.GetString(1);
-                string date = reader.GetString(2);
-
-                cheeps.Add(new CheepViewModel(author, message, date));
+                double date = reader.GetDouble(2);
+                
+                
+                cheeps.Add(new CheepViewModel(author, message, UnixTimeStampToDateTimeString(date)));
             }
         }
-
         return cheeps;
+    }
+    
+    private static string UnixTimeStampToDateTimeString(double unixTimeStamp)
+    {
+        // Unix timestamp is seconds past epoch
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp);
+        return dateTime.ToString("MM/dd/yy H:mm:ss");
     }
 }
