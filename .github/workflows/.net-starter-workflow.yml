@@ -25,4 +25,4 @@ jobs:
       - name: Build
         run: dotnet build src/Chirp.Razor/Chirp.Razor.csproj --no-restore
       - name: Test
-        run: dotnet test src/Chirp.Razor/Chirp.Razor --no-build --verbosity normal
+        run: dotnet test src/Chirp.Razor/Chirp.Razor.csproj --no-build --verbosity normal
