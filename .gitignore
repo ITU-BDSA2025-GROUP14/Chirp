@@ -486,3 +486,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+#Entity Framework/ Database
+Chat.db
+Chat.db-shm
+Chat.db-wal
