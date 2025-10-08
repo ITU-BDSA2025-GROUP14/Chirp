@@ -41,7 +41,7 @@ public class DBFacade
         }
     }
 
-    public List<CheepViewModel> getTimeline()
+    public List<CheepViewModel> GetTimeline()
     {
         var cheeps = new List<CheepViewModel>();
         string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id order by pub_date desc";

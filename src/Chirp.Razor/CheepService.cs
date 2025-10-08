@@ -19,8 +19,7 @@ public class CheepService
 
     public List<CheepViewModel> GetCheeps()
     {
-        _cheeps.AddRange(_connection.getTimeline());
-        return _cheeps;
+        return _connection.GetTimeline();
     }
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author)
@@ -36,6 +35,4 @@ public class CheepService
         dateTime = dateTime.AddSeconds(unixTimeStamp);
         return dateTime.ToString("MM/dd/yy H:mm:ss");
     }
-    
-
 }
