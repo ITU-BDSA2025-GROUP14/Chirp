@@ -19,10 +19,30 @@ public class CheepService
         return _connection.GetTimeline();
     }
 
+    public List<CheepViewModel> GetCheeps(int pageNumber, int pageSize)
+    {
+        return _connection.GetTimeline(pageNumber, pageSize);
+    }
+
+    public int GetTotalCheepCount()
+    {
+        return _connection.GetTotalCheepCount();
+    }
+
     public List<CheepViewModel> GetCheepsFromAuthor(string author)
     {
         // filter by the provided author name using SQL query
         return _connection.GetTimelineByAuthor(author);
+    }
+
+    public List<CheepViewModel> GetCheepsFromAuthor(string author, int pageNumber, int pageSize)
+    {
+        return _connection.GetTimelineByAuthor(author, pageNumber, pageSize);
+    }
+
+    public int GetTotalCheepCountByAuthor(string author)
+    {
+        return _connection.GetTotalCheepCountByAuthor(author);
     }
 
     private static string UnixTimeStampToDateTimeString(double unixTimeStamp)
