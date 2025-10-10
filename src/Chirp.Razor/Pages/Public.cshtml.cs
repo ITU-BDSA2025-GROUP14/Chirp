@@ -15,7 +15,6 @@ public class PublicModel : PageModel
     
     public List<CheepViewModel> Cheeps { get; set; }
     
-    
     private readonly CheepService _service;
     
     public PublicModel(CheepService service)

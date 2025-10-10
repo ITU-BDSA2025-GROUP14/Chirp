@@ -6,7 +6,7 @@
 }
 
 <div>
-    <h2> Public Timeline </h2>
+    <h2> Private Timeline </h2>
 
     @if (Model.Cheeps.Any())
     {
@@ -29,4 +29,31 @@
     {
         <em>There are no cheeps so far.</em>
     }
+</div>
+
+<div>
+    <ul class="paginationList">
+        @if (Model.ShowPrevious)
+        {
+            <li class="page-item">
+                <a href="/@Model.Author?CurrentPage=@(Model.CurrentPage - 1)">Previous</a>
+            </li>
+        }
+        @if (Model.ShowNext)
+        {
+            <li class="page-item">
+                <a href="/@Model.Author?CurrentPage=@(Model.CurrentPage + 1)">Next</a>
+            </li>
+        }
+    </ul>
+    <div>
+        <ul class="pagination">
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a href="/@Model.Author?CurrentPage=@i">@i</a>
+                </li>
+            }
+        </ul>
+    </div>
 </div>
