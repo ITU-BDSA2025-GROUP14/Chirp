@@ -38,6 +38,7 @@ public class DBFacade
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = message;
+            command.ExecuteNonQuery();
         }
     }
 
@@ -50,17 +51,43 @@ public class DBFacade
             connection.Open();
             var command = connection.CreateCommand();
             command.CommandText = sqlQuery;
-           
+
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                
+
                 string author = reader.GetString(0);
                 string message = reader.GetString(1);
                 double date = reader.GetDouble(2);
-                
-                
+
+
                 cheeps.Add(new CheepViewModel(author, message, UnixTimeStampToDateTimeString(date)));
+            }
+        }
+        return cheeps;
+    }
+
+    public List<CheepViewModel> GetTimelineByAuthor(string author)
+    {
+        var cheeps = new List<CheepViewModel>();
+        string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id where user.username = $author order by pub_date desc";
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
+        {
+            connection.Open();
+            var command = connection.CreateCommand();
+            command.CommandText = sqlQuery;
+            command.Parameters.AddWithValue("$author", author);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+
+                string authorName = reader.GetString(0);
+                string message = reader.GetString(1);
+                double date = reader.GetDouble(2);
+
+
+                cheeps.Add(new CheepViewModel(authorName, message, UnixTimeStampToDateTimeString(date)));
             }
         }
         return cheeps;

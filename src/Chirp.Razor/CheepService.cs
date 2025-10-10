@@ -21,8 +21,8 @@ public class CheepService
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author)
     {
-        // filter by the provided author name
-        return _connection.GetTimeline().Where(x => x.Author == author).ToList();
+        // filter by the provided author name using SQL query
+        return _connection.GetTimelineByAuthor(author);
     }
 
     private static string UnixTimeStampToDateTimeString(double unixTimeStamp)
