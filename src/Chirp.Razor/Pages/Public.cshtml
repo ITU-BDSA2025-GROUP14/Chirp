@@ -32,16 +32,16 @@
 </div>
 
 <div>
-    <ul class="">
+    <ul class="paginationList">
         @if (Model.ShowPrevious)
         {
-            <li class="">
+            <li class="page-item">
                 <a href="/?CurrentPage=@(Model.CurrentPage - 1)">Previous</a>
             </li>
         }
         @if (Model.ShowNext)
         {
-            <li class="">
+            <li class="page-item">
                 <a href="/?CurrentPage=@(Model.CurrentPage + 1)">Next</a>
             </li>
         }
@@ -57,3 +57,4 @@
         </ul>
     </div>
 </div>
+
