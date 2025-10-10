@@ -44,7 +44,7 @@ public class DBFacade
     public List<CheepViewModel> GetTimeline()
     {
         var cheeps = new List<CheepViewModel>();
-        string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id order by pub_date desc";
+        string sqlQuery = @"select user.name, message.text, message.timestamp from cheeps message left outer join authors user on message.Authorid = user.Authorid order by timestamp desc";
         using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
         {
             connection.Open();
