@@ -30,3 +30,30 @@
         <em>There are no cheeps so far.</em>
     }
 </div>
+
+<div>
+    <ul class="">
+        @if (Model.ShowPrevious)
+        {
+            <li class="">
+                <a href="/@Model.Author?page=@(Model.page - 1)">Previous</a>
+            </li>
+        }
+        @if (Model.ShowNext)
+        {
+            <li class="">
+                <a href="/@Model.Author?page=@(Model.page + 1)">Next</a>
+            </li>
+        }
+    </ul>
+    <div>
+        <ul class="pagination">
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.page ? "active" : "")">
+                    <a href="/@Model.Author?page=@i">@i</a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
