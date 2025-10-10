@@ -27,9 +27,8 @@ public class UserTimelineModel : PageModel
     public ActionResult OnGet(string author)
     {
         Author = author;
-        var allCheeps = _service.GetCheepsFromAuthor(author);
-        PageCount = allCheeps.Count;
-        Cheeps = allCheeps.Skip((page - 1) * PageSize).Take(PageSize).ToList();
+        PageCount = _service.GetTotalCheepCountByAuthor(author);
+        Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
         return Page();
     }
 }
