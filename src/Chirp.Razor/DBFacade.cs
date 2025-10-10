@@ -55,7 +55,6 @@ public class DBFacade
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-
                 string author = reader.GetString(0);
                 string message = reader.GetString(1);
                 double date = reader.GetDouble(2);
@@ -83,7 +82,6 @@ public class DBFacade
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-
                 string author = reader.GetString(0);
                 string message = reader.GetString(1);
                 double date = reader.GetDouble(2);
@@ -122,7 +120,6 @@ public class DBFacade
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-
                 string authorName = reader.GetString(0);
                 string message = reader.GetString(1);
                 double date = reader.GetDouble(2);
@@ -151,7 +148,6 @@ public class DBFacade
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-
                 string authorName = reader.GetString(0);
                 string message = reader.GetString(1);
                 double date = reader.GetDouble(2);
