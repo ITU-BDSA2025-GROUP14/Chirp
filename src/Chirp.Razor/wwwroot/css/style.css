@@ -226,3 +226,38 @@ li.topic {
   -webkit-border-radius: 5px;
   min-height: 20px;
 }
+
+ul.paginationList,
+ul.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    justify-content: center; 
+}
+
+li.page-item {
+    margin-right: 10px;
+}
+
+li.page-item:last-child {
+    margin-right: 0;
+}
+
+li.page-item a {
+    text-decoration: none;
+    color: #26776F;
+    font-weight: bold;
+}
+
+li.page-item a:hover {
+    color: #571010;
+}
+
+li.page-item.active a {
+    color: white;
+    background-color: #cc6e6e;
+    padding: 3px 7px;
+    border-radius: 3px;
+}
+

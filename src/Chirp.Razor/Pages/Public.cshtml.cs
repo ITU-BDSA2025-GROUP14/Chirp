@@ -14,8 +14,7 @@ public class PublicModel : PageModel
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
     public List<CheepViewModel> Cheeps { get; set; }
-
-
+    
     private readonly CheepService _service;
 
     public PublicModel(CheepService service)
