@@ -1,4 +1,4 @@
-﻿using Chirp.Razor.DTOs;
+﻿using Chirp.Core.DTO;
 using Chirp.Razor.Interfaces;
 
 namespace Chirp.Razor;
