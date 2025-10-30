@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-using SQLitePCL;
-
-namespace Chirp.Razor.Pages;
+namespace Chirp.Web.Pages;
 public class PublicModel : PageModel
 {
     [BindProperty(SupportsGet = true)]
-    public int page { get; set; } = 1;
+    public int CurrentPage { get; set; } = 1;
     public int PageCount { get; set; }
     public int PageSize { get; set; } = 32;
 
@@ -21,12 +19,14 @@ public class PublicModel : PageModel
     {
         _service = service;
     }
-    public bool ShowPrevious => page > 1;
-    public bool ShowNext => page < TotalPages;
-    public ActionResult OnGet()
+    public bool ShowPrevious => CurrentPage > 1;
+    public bool ShowNext => CurrentPage < TotalPages;
+    public ActionResult OnGet([FromQuery] int page = 1)
     {
+        CurrentPage = page;
+        
         PageCount = _service.GetTotalCheepCount();
-        Cheeps = _service.GetCheeps(page, PageSize);
+        Cheeps = _service.GetCheeps(CurrentPage, PageSize);
         return Page();
     }
 }
