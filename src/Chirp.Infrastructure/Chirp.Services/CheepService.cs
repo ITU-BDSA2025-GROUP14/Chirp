@@ -1,48 +1,88 @@
 using System.Data;
 
 using Chirp.Razor;
-using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 public record CheepViewModel(string Author, string Message, string Timestamp);
 
 public class CheepService
 {
-    private DBFacade _connection = DBFacade.GetInstance();
+    private readonly ChirpDBContext _context;
 
-    //These would normally be loaded from a database for example
-    private static readonly List<CheepViewModel> _cheeps = new()
-    { 
-    };
+    public CheepService(ChirpDBContext context)
+    {
+        _context = context;
+    }
 
     public List<CheepViewModel> GetCheeps()
     {
-        return _connection.GetTimeline();
+        return _context.Cheeps.Include(c => c.Author).OrderByDescending(c => c.TimeStamp).Select(c =>
+                new CheepViewModel(
+                    c.Author.Name,
+                    c.Text,
+                    c.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+            .ToList();
     }
 
     public List<CheepViewModel> GetCheeps(int pageNumber, int pageSize)
     {
-        return _connection.GetTimeline(pageNumber, pageSize);
+        pageNumber = Math.Max(pageNumber, 1);
+        int skip = (pageNumber - 1) * pageSize;
+
+        return _context.Cheeps
+            .Include(c => c.Author)
+            .OrderByDescending(c => c.TimeStamp)
+            .ThenByDescending(c => c.CheepId)  // <- tie-breaker
+            .Skip(skip)
+            .Take(pageSize)
+            .Select(c => new CheepViewModel(
+                c.Author.Name,
+                c.Text,
+                c.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+            .ToList();
     }
 
     public int GetTotalCheepCount()
     {
-        return _connection.GetTotalCheepCount();
+        return _context.Cheeps.Count();
     }
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author)
     {
         // filter by the provided author name using SQL query
-        return _connection.GetTimelineByAuthor(author);
+        return _context.Cheeps
+            .Include(c => c.Author)
+            .Where(c => c.Author.Name == author)
+            .OrderByDescending(c => c.TimeStamp)
+            .Select(c => new CheepViewModel(
+                c.Author.Name,
+                c.Text,
+                c.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+            .ToList();
     }
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author, int pageNumber, int pageSize)
     {
-        return _connection.GetTimelineByAuthor(author, pageNumber, pageSize);
+        int skip = (pageNumber - 1) * pageSize;
+
+        return _context.Cheeps
+            .Include(c => c.Author)
+            .Where(c => c.Author.Name == author)
+            .OrderByDescending(c => c.TimeStamp)
+            .Skip(skip)
+            .Take(pageSize)
+            .Select(c => new CheepViewModel(
+                c.Author.Name,
+                c.Text,
+                c.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
+            .ToList();
     }
 
     public int GetTotalCheepCountByAuthor(string author)
     {
-        return _connection.GetTotalCheepCountByAuthor(author);
+        return _context.Cheeps
+            .Include(c => c.Author)
+            .Count(c => c.Author.Name == author);
     }
 
     private static string UnixTimeStampToDateTimeString(double unixTimeStamp)
