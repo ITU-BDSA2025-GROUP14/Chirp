@@ -12,6 +12,7 @@ builder.Services.AddDbContext<ChirpDBContext>(options => options.UseSqlite(conne
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<CheepService>();
+builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 var app = builder.Build();
