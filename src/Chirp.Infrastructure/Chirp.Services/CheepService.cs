@@ -69,7 +69,7 @@ public class CheepService
             .Include(c => c.Author)
             .Where(c => c.Author.Name == author)
             .OrderByDescending(c => c.TimeStamp)
-            .ThenByDescending(c => c.CheepId) // ✅ tie-breaker
+            .ThenByDescending(c => c.CheepId)
             .Skip(skip)
             .Take(pageSize)
             .Select(c => new CheepViewModel(

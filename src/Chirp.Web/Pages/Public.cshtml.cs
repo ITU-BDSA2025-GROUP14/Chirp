@@ -23,7 +23,6 @@ public class PublicModel : PageModel
     public bool ShowNext => CurrentPage < TotalPages;
     public ActionResult OnGet([FromQuery] int page = 1)
     {
-        // ✅ Clamp before storing or using it
         page = Math.Max(page, 1);
         CurrentPage = page;
 
