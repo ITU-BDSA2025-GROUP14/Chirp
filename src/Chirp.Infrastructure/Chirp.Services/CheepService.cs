@@ -1,6 +1,5 @@
+using Chirp.Core.DTO;
 using Chirp.Razor.Interfaces;
-
-public record CheepViewModel(string Author, string Message, string Timestamp);
 
 public class CheepService
 {
@@ -11,14 +10,14 @@ public class CheepService
         _repository = repository;
     }
 
-    public List<CheepViewModel> GetCheeps()
+    public List<CheepDto> GetCheeps()
     {
         return _repository.GetCheeps()
             .Select(ToViewModel)
             .ToList();
     }
 
-    public List<CheepViewModel> GetCheeps(int pageNumber, int pageSize)
+    public List<CheepDto> GetCheeps(int pageNumber, int pageSize)
     {
         return _repository.GetCheeps(pageNumber, pageSize)
             .Select(ToViewModel)
@@ -30,14 +29,14 @@ public class CheepService
         return _repository.GetTotalCheepCount();
     }
 
-    public List<CheepViewModel> GetCheepsFromAuthor(string author)
+    public List<CheepDto> GetCheepsFromAuthor(string author)
     {
         return _repository.GetCheepsFromAuthor(author)
             .Select(ToViewModel)
             .ToList();
     }
 
-    public List<CheepViewModel> GetCheepsFromAuthor(string author, int pageNumber, int pageSize)
+    public List<CheepDto> GetCheepsFromAuthor(string author, int pageNumber, int pageSize)
     {
         return _repository.GetCheepsFromAuthor(author, pageNumber, pageSize)
             .Select(ToViewModel)
@@ -49,10 +48,10 @@ public class CheepService
         return _repository.GetTotalCheepCountByAuthor(author);
     }
 
-    private static CheepViewModel ToViewModel(Chirp.Razor.Models.Cheep cheep)
+    private static CheepDto ToViewModel(Chirp.Razor.Models.Cheep cheep)
     {
         string authorName = cheep.Author?.Name ?? "Unknown";
-        return new CheepViewModel(
+        return new CheepDto(
             authorName,
             cheep.Text,
             cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"));

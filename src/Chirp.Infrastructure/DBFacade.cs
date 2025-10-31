@@ -1,5 +1,6 @@
 namespace Chirp.Razor;
 using System.Data;
+using Chirp.Core.DTO;
 using Microsoft.Data.Sqlite;
 
 public class DBFacade
@@ -42,9 +43,9 @@ public class DBFacade
         }
     }
 
-    public List<CheepViewModel> GetTimeline()
+    public List<CheepDto> GetTimeline()
     {
-        var cheeps = new List<CheepViewModel>();
+        var cheeps = new List<CheepDto>();
         string sqlQuery = @"select user.name, message.text, message.timestamp from cheeps message left outer join authors user on message.Authorid = user.Authorid order by timestamp desc";
         using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
         {
@@ -60,15 +61,15 @@ public class DBFacade
                 double date = reader.GetDouble(2);
 
 
-                cheeps.Add(new CheepViewModel(author, message, UnixTimeStampToDateTimeString(date)));
+                cheeps.Add(new CheepDto(author, message, UnixTimeStampToDateTimeString(date)));
             }
         }
         return cheeps;
     }
 
-    public List<CheepViewModel> GetTimeline(int pageNumber, int pageSize)
+    public List<CheepDto> GetTimeline(int pageNumber, int pageSize)
     {
-        var cheeps = new List<CheepViewModel>();
+        var cheeps = new List<CheepDto>();
         int offset = (pageNumber - 1) * pageSize;
         string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id order by pub_date desc limit $pageSize offset $offset";
         using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
@@ -87,7 +88,7 @@ public class DBFacade
                 double date = reader.GetDouble(2);
 
 
-                cheeps.Add(new CheepViewModel(author, message, UnixTimeStampToDateTimeString(date)));
+                cheeps.Add(new CheepDto(author, message, UnixTimeStampToDateTimeString(date)));
             }
         }
         return cheeps;
@@ -106,9 +107,9 @@ public class DBFacade
         }
     }
 
-    public List<CheepViewModel> GetTimelineByAuthor(string author)
+    public List<CheepDto> GetTimelineByAuthor(string author)
     {
-        var cheeps = new List<CheepViewModel>();
+        var cheeps = new List<CheepDto>();
         string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id where user.username = $author order by pub_date desc";
         using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
         {
@@ -125,15 +126,15 @@ public class DBFacade
                 double date = reader.GetDouble(2);
 
 
-                cheeps.Add(new CheepViewModel(authorName, message, UnixTimeStampToDateTimeString(date)));
+                cheeps.Add(new CheepDto(authorName, message, UnixTimeStampToDateTimeString(date)));
             }
         }
         return cheeps;
     }
 
-    public List<CheepViewModel> GetTimelineByAuthor(string author, int pageNumber, int pageSize)
+    public List<CheepDto> GetTimelineByAuthor(string author, int pageNumber, int pageSize)
     {
-        var cheeps = new List<CheepViewModel>();
+        var cheeps = new List<CheepDto>();
         int offset = (pageNumber - 1) * pageSize;
         string sqlQuery = @"select user.username, message.text, message.pub_date from message message left outer join user user on author_id = user_id where user.username = $author order by pub_date desc limit $pageSize offset $offset";
         using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={GetConnectionString()}"))
@@ -153,7 +154,7 @@ public class DBFacade
                 double date = reader.GetDouble(2);
 
 
-                cheeps.Add(new CheepViewModel(authorName, message, UnixTimeStampToDateTimeString(date)));
+                cheeps.Add(new CheepDto(authorName, message, UnixTimeStampToDateTimeString(date)));
             }
         }
         return cheeps;
