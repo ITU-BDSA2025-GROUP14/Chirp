@@ -69,6 +69,7 @@ public class CheepService
             .Include(c => c.Author)
             .Where(c => c.Author.Name == author)
             .OrderByDescending(c => c.TimeStamp)
+            .ThenByDescending(c => c.CheepId) // ✅ tie-breaker
             .Skip(skip)
             .Take(pageSize)
             .Select(c => new CheepViewModel(
@@ -77,6 +78,7 @@ public class CheepService
                 c.TimeStamp.ToString("MM/dd/yy H:mm:ss")))
             .ToList();
     }
+
 
     public int GetTotalCheepCountByAuthor(string author)
     {
