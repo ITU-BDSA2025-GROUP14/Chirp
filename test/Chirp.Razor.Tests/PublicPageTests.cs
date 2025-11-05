@@ -1,12 +1,7 @@
 ﻿using Xunit;
 using Chirp.Web.Pages;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-
 using Chirp.Razor;
 using Chirp.Razor.Models;
-
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class PublicPageTests
@@ -19,14 +14,12 @@ public class PublicPageTests
     {
         _context = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
 
-
-
-        // seed some data
         var author = new Author
         {
             Name = "Alice",
             Email = "alice@example.com"
         };
+        
         _context.Authors.Add(author);
         _context.Cheeps.Add(new Cheep
         {
@@ -35,8 +28,9 @@ public class PublicPageTests
             TimeStamp = DateTime.UtcNow
         });
         _context.SaveChanges();
-
-        _service = new CheepService(_context);
+        
+        var repo = new CheepRepository(_context);
+        _service = new CheepService(repo);
         _pageModel = new PublicModel(_service);
     }
 
@@ -57,11 +51,19 @@ public class PublicPageTests
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var author = new Author { Name = "Alice", Email = "alice@example.com" };
         ctx.Authors.Add(author);
+        
         for (int i = 0; i < 60; i++)
-            ctx.Cheeps.Add(new Cheep { Author = author, Text = $"#{i}", TimeStamp = DateTime.UtcNow.AddSeconds(-i) });
+            ctx.Cheeps.Add(
+                new Cheep
+                {
+                    Author = author,
+                    Text = $"#{i}",
+                    TimeStamp = DateTime.UtcNow.AddSeconds(-i)
+                });
         ctx.SaveChanges();
 
-        var svc = new CheepService(ctx);
+        var repo = new CheepRepository(ctx);
+        var svc = new CheepService(repo);
         var page = new PublicModel(svc);
 
         var result = page.OnGet(0); // clamp
@@ -77,7 +79,8 @@ public class PublicPageTests
     public void Timeline_OnGet_UnknownAuthor_ReturnsEmpty()
     {
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
-        var svc = new CheepService(ctx);
+        var repo = new CheepRepository(ctx);
+        var svc = new CheepService(repo);
         var page = new UserTimelineModel(svc);
 
         var result = page.OnGet("nobody");
@@ -103,7 +106,8 @@ public class PublicPageTests
         );
         ctx.SaveChanges();
 
-        var svc = new CheepService(ctx);
+        var repo = new CheepRepository(ctx);
+        var svc = new CheepService(repo);
         var page = new UserTimelineModel(svc) { page = 1 };
         page.OnGet("Alice");
 
