@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Chirp.Core.DTO;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Chirp.Web.Pages;
@@ -11,7 +13,7 @@ public class PublicModel : PageModel
 
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
-    public List<CheepViewModel> Cheeps { get; set; }
+    public List<CheepDto> Cheeps { get; set; }
     
     private readonly CheepService _service;
 
