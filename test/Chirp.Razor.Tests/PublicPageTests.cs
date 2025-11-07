@@ -1,9 +1,12 @@
-﻿using Chirp.Infrastructure;
+﻿using Chirp.Core;
+using Chirp.Infrastructure;
+using Chirp.Infrastructure.Chirp.Repositories;
+using Chirp.Infrastructure.Chirp.Services;
 
 using Xunit;
 using Chirp.Web.Pages;
 using Chirp.Razor;
-using Chirp.Razor.Models;
+
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class PublicPageTests

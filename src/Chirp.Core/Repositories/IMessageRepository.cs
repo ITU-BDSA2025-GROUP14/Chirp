@@ -1,11 +1,11 @@
 ﻿using Chirp.Core.DTO;
 
-namespace Chirp.Razor.Interfaces;
+namespace Chirp.Core.Repositories;
 
 public interface IMessageRepository
 {
-    public Task CreateMessage(MessageDTO message);
-    public Task<List<MessageDTO>> ReadMessage(string userName);
-    public Task UpdateMessage(MessageDTO message);
+    public Task CreateMessage(MessageDto message);
+    public Task<List<MessageDto>> ReadMessage(string userName);
+    public Task UpdateMessage(MessageDto message);
 
 }

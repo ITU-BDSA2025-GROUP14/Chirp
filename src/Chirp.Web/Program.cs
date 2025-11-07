@@ -1,7 +1,8 @@
+using Chirp.Core.Repositories;
 using Chirp.Infrastructure;
+using Chirp.Infrastructure.Chirp.Repositories;
+using Chirp.Infrastructure.Chirp.Services;
 using Chirp.Infrastructure.Identity;
-using Chirp.Razor;
-using Chirp.Razor.Interfaces;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -40,8 +41,6 @@ using (var scope = app.Services.CreateScope())
 
     // Ensure database is created and migrated
     db.Database.Migrate();
-
-
     
     // seeding db
     DbInitializer.SeedDatabase(db);

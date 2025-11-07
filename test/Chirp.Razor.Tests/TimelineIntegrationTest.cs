@@ -1,5 +1,7 @@
-﻿using Chirp.Infrastructure;
-using Chirp.Razor.Models;
+﻿using Chirp.Core;
+using Chirp.Infrastructure;
+using Chirp.Infrastructure.Chirp.Repositories;
+using Chirp.Infrastructure.Chirp.Services;
 using Chirp.Web.Pages;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;

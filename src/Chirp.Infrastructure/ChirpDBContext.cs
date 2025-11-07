@@ -1,5 +1,5 @@
-﻿using Chirp.Infrastructure.Identity;
-using Chirp.Razor.Models;
+﻿using Chirp.Core;
+using Chirp.Infrastructure.Identity;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
