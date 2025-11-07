@@ -1,4 +1,5 @@
-﻿using Chirp.Razor.Models;
+﻿using Chirp.Infrastructure;
+using Chirp.Razor.Models;
 using Chirp.Web.Pages;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,7 +12,7 @@ namespace Chirp.Razor.Tests;
 public class TimelineIntegrationTest
 {
     private readonly UserTimelineModel _pageModel;
-    private readonly ChirpDBContext _context;
+    private readonly ChirpDbContext _context;
     private readonly CheepService _service;
 
     public TimelineIntegrationTest()

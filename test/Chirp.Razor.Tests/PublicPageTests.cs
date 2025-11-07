@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using Chirp.Infrastructure;
+
+using Xunit;
 using Chirp.Web.Pages;
 using Chirp.Razor;
 using Chirp.Razor.Models;
@@ -7,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 public class PublicPageTests
 {
     private readonly PublicModel _pageModel;
-    private readonly ChirpDBContext _context;
+    private readonly ChirpDbContext _context;
     private readonly CheepService _service;
 
     public PublicPageTests()

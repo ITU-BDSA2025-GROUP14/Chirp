@@ -1,19 +1,28 @@
+using Chirp.Infrastructure;
+using Chirp.Infrastructure.Identity;
 using Chirp.Razor;
 using Chirp.Razor.Interfaces;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
     
 // Load database connection via configuration
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ChirpDBContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDbContext<ChirpDbContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Infrastructure")));
 
 // Add services to the container.
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ChirpDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<CheepService>();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
 
 var app = builder.Build();
 
@@ -27,7 +36,7 @@ if (!app.Environment.IsDevelopment())
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ChirpDBContext>();
+    var db = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
     
     // seeding db
     DbInitializer.SeedDatabase(db);
@@ -37,7 +46,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

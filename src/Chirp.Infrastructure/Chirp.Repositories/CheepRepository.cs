@@ -1,4 +1,5 @@
-﻿using Chirp.Razor.Interfaces;
+﻿using Chirp.Infrastructure;
+using Chirp.Razor.Interfaces;
 using Chirp.Razor.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,9 @@ namespace Chirp.Razor;
 
 public class CheepRepository : ICheepRepository
 {
-    private readonly ChirpDBContext _context;
+    private readonly ChirpDbContext _context;
 
-    public CheepRepository(ChirpDBContext context)
+    public CheepRepository(ChirpDbContext context)
     {
         _context = context;
     }

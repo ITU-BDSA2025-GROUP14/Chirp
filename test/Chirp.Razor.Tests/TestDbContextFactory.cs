@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Chirp.Infrastructure;
+
+using Microsoft.EntityFrameworkCore;
 using Chirp.Razor;
 
 public static class TestDbContextFactory
 {
-    public static ChirpDBContext CreateContext(string dbName)
+    public static ChirpDbContext CreateContext(string dbName)
     {
-        var options = new DbContextOptionsBuilder<ChirpDBContext>()
+        var options = new DbContextOptionsBuilder<ChirpDbContext>()
             .UseInMemoryDatabase(dbName)
             .Options;
 
-        return new ChirpDBContext(options);
+        return new ChirpDbContext(options);
     }
 }
