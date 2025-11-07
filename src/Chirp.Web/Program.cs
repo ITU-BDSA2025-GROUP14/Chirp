@@ -28,7 +28,10 @@ if (!app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ChirpDBContext>();
-    
+
+    // Ensure database is created and migrated
+    db.Database.Migrate();
+
     // seeding db
     DbInitializer.SeedDatabase(db);
 }
