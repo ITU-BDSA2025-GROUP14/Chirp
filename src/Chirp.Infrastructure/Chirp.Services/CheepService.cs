@@ -1,5 +1,7 @@
 using Chirp.Core.DTO;
-using Chirp.Razor.Interfaces;
+using Chirp.Core.Repositories;
+
+namespace Chirp.Infrastructure.Chirp.Services;
 
 public class CheepService
 {
@@ -48,7 +50,7 @@ public class CheepService
         return _repository.GetTotalCheepCountByAuthor(author);
     }
 
-    private static CheepDto ToViewModel(Chirp.Razor.Models.Cheep cheep)
+    private static CheepDto ToViewModel(global::Chirp.Core.Cheep cheep)
     {
         string authorName = cheep.Author?.Name ?? "Unknown";
         return new CheepDto(

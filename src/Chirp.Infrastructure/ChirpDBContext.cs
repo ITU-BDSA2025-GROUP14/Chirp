@@ -1,15 +1,17 @@
-﻿using Chirp.Razor.Models;
+﻿using Chirp.Core;
+using Chirp.Infrastructure.Identity;
 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chirp.Razor;
+namespace Chirp.Infrastructure;
 
-public class ChirpDBContext : DbContext
+public class ChirpDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<Cheep> Cheeps { get; set; }
     public DbSet<Author> Authors { get; set; }
 
-    public ChirpDBContext(DbContextOptions<ChirpDBContext> options) : base(options)
+    public ChirpDbContext(DbContextOptions<ChirpDbContext> options) : base(options)
     {
         
     }

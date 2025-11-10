@@ -1,21 +1,21 @@
 ﻿using Chirp.Core.DTO;
-using Chirp.Razor.Interfaces;
+using Chirp.Core.Repositories;
 
-namespace Chirp.Razor;
+namespace Chirp.Infrastructure.Chirp.Repositories;
 
 public class MessageRepository : IMessageRepository
 {
-    public Task CreateMessage(MessageDTO message)
+    public Task CreateMessage(MessageDto message)
     {
         throw new NotImplementedException();
     }
 
-    public Task<List<MessageDTO>> ReadMessage(string userName)
+    public Task<List<MessageDto>> ReadMessage(string userName)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateMessage(MessageDTO message)
+    public Task UpdateMessage(MessageDto message)
     {
         throw new NotImplementedException();
     }

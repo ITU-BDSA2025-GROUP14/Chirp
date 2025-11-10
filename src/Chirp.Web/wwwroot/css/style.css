@@ -261,3 +261,39 @@ li.page-item.active a {
     border-radius: 3px;
 }
 
+div.loginbar {
+    background: #dee9e8;
+    padding: 5px 10px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+    text-align: right;
+}
+
+ul.navbar-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    gap: 10px;
+}
+
+ul.navbar-nav li {
+    display: inline;
+}
+
+ul.navbar-nav a,
+ul.navbar-nav button {
+    text-decoration: none;
+    color: #26776F;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+ul.navbar-nav a:hover,
+ul.navbar-nav button:hover {
+    color: #571010;
+}
+
