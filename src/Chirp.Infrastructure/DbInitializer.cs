@@ -2,11 +2,14 @@
 
 using Chirp.Core;
 using Chirp.Infrastructure;
+using Chirp.Infrastructure.Identity;
 using Chirp.Razor;
+
+using Microsoft.AspNetCore.Identity;
 
 public static class DbInitializer
 {
-    public static void SeedDatabase(ChirpDbContext chirpContext)
+    public static void SeedDatabase(ChirpDbContext chirpContext, UserManager<ApplicationUser> userManager)
     {
         if (!(chirpContext.Authors.Any() && chirpContext.Cheeps.Any()))
         {
@@ -700,6 +703,46 @@ public static class DbInitializer
             chirpContext.Authors.AddRange(authors);
             chirpContext.Cheeps.AddRange(cheeps);
             chirpContext.SaveChanges();
+        }
+
+        // seeding identity test users
+        SeedIdentityUsers(userManager).Wait();
+    }
+
+    private static async Task SeedIdentityUsers(UserManager<ApplicationUser> userManager)
+    {
+        // seeding helge (i think we're supposed to do this, but plz make sure)
+        var helgeEmail = "ropf@itu.dk";
+        if (await userManager.FindByEmailAsync(helgeEmail) == null)
+        {
+            var helgeUser = new ApplicationUser
+            {
+                UserName = helgeEmail,
+                Email = helgeEmail,
+                EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(helgeUser, "LetM31n!");
+            if (!result.Succeeded)
+            {
+                throw new Exception($"Failed to create Helge user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+
+        // seeding adriian (again, unsure if we should do this, but good for testing too)
+        var adrianEmail = "adho@itu.dk";
+        if (await userManager.FindByEmailAsync(adrianEmail) == null)
+        {
+            var adrianUser = new ApplicationUser
+            {
+                UserName = adrianEmail,
+                Email = adrianEmail,
+                EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(adrianUser, "M32Want_Access");
+            if (!result.Succeeded)
+            {
+                throw new Exception($"Failed to create Adrian user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
         }
     }
 }

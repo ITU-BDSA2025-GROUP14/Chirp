@@ -9,23 +9,31 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
     
-// Load database connection via configuration
+// loading the db connection via the configuration
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ChirpDbContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Infrastructure")));
 
-// Add services to the container.
+// adding services to the container
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ChirpDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication()
-    .AddGitHub(options =>
+// configuring github OAuth if the credentials are there
+var githubClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+var githubClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+
+var authBuilder = builder.Services.AddAuthentication();
+
+if (!string.IsNullOrEmpty(githubClientId) && !string.IsNullOrEmpty(githubClientSecret))
+{
+    authBuilder.AddGitHub(options =>
     {
-        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+        options.ClientId = githubClientId;
+        options.ClientSecret = githubClientSecret;
         options.CallbackPath = "/signin-github";
     });
+}
 
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<CheepService>();
@@ -35,23 +43,24 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// configuring http request pipelinne
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // default hsts value is 30 days, so possibly we should change this for prod scenarios (https://aka.ms/aspnetcore-hsts).
     app.UseHsts();
 }
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ChirpDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-    // Ensure database is created and migrated
+    // ensuring that the db is created + migrated
     db.Database.Migrate();
-    
+
     // seeding db
-    DbInitializer.SeedDatabase(db);
+    DbInitializer.SeedDatabase(db, userManager);
 }
 
 app.UseHttpsRedirection();
