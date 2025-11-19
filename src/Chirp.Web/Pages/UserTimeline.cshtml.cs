@@ -1,4 +1,6 @@
-﻿using Chirp.Core.DTO;
+﻿using System.ComponentModel.DataAnnotations;
+
+using Chirp.Core.DTO;
 using Chirp.Infrastructure.Chirp.Services;
 
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +19,11 @@ public class UserTimelineModel : PageModel
     public int PageSize { get; set; } = 32;
     public string Author { get; set; }
 
+    [BindProperty]
+    [Required(ErrorMessage = "Enter a message, please")]
+    [StringLength(160, ErrorMessage = "The message can not exceed 160 chars")]
+    public string Text { get; set; } = string.Empty;
+
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
     public UserTimelineModel(CheepService service)
@@ -33,5 +40,34 @@ public class UserTimelineModel : PageModel
         PageCount = _service.GetTotalCheepCountByAuthor(author);
         Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
         return Page();
+    }
+
+    public async Task<IActionResult> OnPostAsync(string author)
+    {
+        Author = author;
+
+        if (!ModelState.IsValid)
+        {
+            // reloading page with validaition errsors
+            PageCount = _service.GetTotalCheepCountByAuthor(author);
+            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+            return Page();
+        }
+
+        // getting authenticated users name
+        var authorName = User.Identity?.Name;
+        if (string.IsNullOrEmpty(authorName))
+        {
+            ModelState.AddModelError(string.Empty, "You must be logged in to post a cheep");
+            PageCount = _service.GetTotalCheepCountByAuthor(author);
+            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+            return Page();
+        }
+
+        // create the cheep
+        await _service.CreateCheep(authorName, Text);
+
+        // redirecting to same page so that we prevent resubmission
+        return RedirectToPage("/UserTimeline", new { author = author, page = page });
     }
 }
