@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Chirp.Core;
+using Chirp.Infrastructure;
 using Chirp.Infrastructure.Chirp.Repositories;
 using Chirp.Infrastructure.Chirp.Services;
 using Chirp.Web.Pages;
@@ -13,11 +14,13 @@ using Xunit;
 
 public class CheepPostingTests
 {
-    private CheepService CreateCheepServiceWithFreshDatabase()
+    private (CheepService service, AuthorRepository authorRepo, ChirpDbContext context) CreateCheepServiceWithFreshDatabase()
     {
         var context = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var repository = new CheepRepository(context);
-        return new CheepService(repository);
+        var authorRepository = new AuthorRepository(context);
+        var service = new CheepService(repository);
+        return (service, authorRepository, context);
     }
 
     private void SetupPageContextWithAuthenticatedUser(PageModel pageModel, string username)
@@ -59,8 +62,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheep_WhenUserIsNotLoggedIn_ShowsErrorMessageAndDoesNotCreateCheep()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var publicPageModel = new PublicModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var publicPageModel = new PublicModel(service, authorRepo)
         {
             Text = "test cheep test cheep"
         };
@@ -79,8 +82,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheep_WhenUserIsAuthenticated_SuccessfullyCreatesCheepAndRedirectsToPublicTimeline()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var publicPageModel = new PublicModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var publicPageModel = new PublicModel(service, authorRepo)
         {
             Text = "test -- valid test cheep"
         };
@@ -102,8 +105,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheep_WhenMessageExceeds160Characters_ShowsValidationErrorAndDoesNotCreateCheep()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var publicPageModel = new PublicModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var publicPageModel = new PublicModel(service, authorRepo)
         {
             Text = new string('a', 161) // 161 characters -- which exceeds limit
         };
@@ -135,8 +138,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheep_WhenMessageIsEmpty_ShowsRequiredFieldErrorAndDoesNotCreateCheep()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var publicPageModel = new PublicModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var publicPageModel = new PublicModel(service, authorRepo)
         {
             Text = string.Empty
         };
@@ -165,8 +168,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheep_WhenMessageIsExactly160Characters_SuccessfullyCreatesCheep()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var publicPageModel = new PublicModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var publicPageModel = new PublicModel(service, authorRepo)
         {
             Text = new string('a', 160) // this is exactly 160 chars which is the allowed max
         };
@@ -185,8 +188,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheepOnUserTimeline_WhenUserIsNotLoggedIn_ShowsErrorMessageAndDoesNotCreateCheep()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var userTimelinePageModel = new UserTimelineModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var userTimelinePageModel = new UserTimelineModel(service, authorRepo)
         {
             Text = "test cheep test cheep"
         };
@@ -205,8 +208,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheepOnUserTimeline_WhenUserIsAuthenticated_SuccessfullyCreatesCheepAndAppearsInUsersTimeline()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var userTimelinePageModel = new UserTimelineModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var userTimelinePageModel = new UserTimelineModel(service, authorRepo)
         {
             Text = "test -- valid test cheep from usertimeline"
         };
@@ -227,8 +230,8 @@ public class CheepPostingTests
     [Fact]
     public async Task PostingCheepOnPublicTimeline_WhenSuccessful_RedirectsBackToSamePageNumberToPreventResubmission()
     {
-        var service = CreateCheepServiceWithFreshDatabase();
-        var publicPageModel = new PublicModel(service)
+        var (service, authorRepo, context) = CreateCheepServiceWithFreshDatabase();
+        var publicPageModel = new PublicModel(service, authorRepo)
         {
             Text = "Test cheep",
             CurrentPage = 3

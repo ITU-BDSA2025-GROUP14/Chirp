@@ -38,6 +38,7 @@ if (!string.IsNullOrEmpty(githubClientId) && !string.IsNullOrEmpty(githubClientS
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<CheepService>();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 

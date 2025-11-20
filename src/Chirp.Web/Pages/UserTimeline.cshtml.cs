@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 using Chirp.Core.DTO;
+using Chirp.Core.Repositories;
 using Chirp.Infrastructure.Chirp.Services;
 
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,8 @@ namespace Chirp.Web.Pages;
 public class UserTimelineModel : PageModel
 {
     private readonly CheepService _service;
+    private readonly IAuthorRepository _authorRepository;
+
     public List<CheepDto> Cheeps { get; set; }
 
     [BindProperty(SupportsGet = true)]
@@ -26,9 +30,10 @@ public class UserTimelineModel : PageModel
 
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
-    public UserTimelineModel(CheepService service)
+    public UserTimelineModel(CheepService service, IAuthorRepository authorRepository)
     {
         _service = service;
+        _authorRepository = authorRepository;
     }
 
     public bool ShowPrevious => page > 1;
@@ -63,6 +68,12 @@ public class UserTimelineModel : PageModel
             Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
             return Page();
         }
+
+        // getting users email
+        var userEmail = User.FindFirstValue(ClaimTypes.Email) ?? $"{authorName}@chirp.dk";
+
+        // making sure the author exists in the db before creating a cheep
+        await _authorRepository.MakeSureAuthorExists(authorName, userEmail);
 
         // create the cheep
         await _service.CreateCheep(authorName, Text);

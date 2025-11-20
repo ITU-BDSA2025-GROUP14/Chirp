@@ -64,21 +64,14 @@ public class CheepRepository : ICheepRepository
 
     public async Task CreateCheep(string authorName, string message)
     {
-        // finding OR creating the author
+        // finding the author -- it has to already exist from authentication
         var author = await _context.Authors
             .FirstOrDefaultAsync(a => a.Name == authorName);
 
         if (author == null)
         {
-            // creating new author if it does not exist
-            author = new Author
-            {
-                Name = authorName,
-                Email = $"{authorName}@chirp.dk", // default email
-                Cheeps = new List<Cheep>()
-            };
-            _context.Authors.Add(author);
-            await _context.SaveChangesAsync(); // saving to get AuthorId
+            throw new InvalidOperationException(
+                $"Author '{authorName}' doesn't exist. Author has to be created during login/registration before posting cheeps.");
         }
 
         // creating cheep

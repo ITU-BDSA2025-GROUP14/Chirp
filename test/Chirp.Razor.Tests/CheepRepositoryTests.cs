@@ -34,21 +34,18 @@ public class CheepRepositoryTests
     }
 
     [Fact]
-    public async Task CreateCheep_CreatesNewAuthor_WhenAuthorDoesNotExist()
+    public async Task CreateCheep_ThrowsException_WhenAuthorDoesNotExist()
     {
         var context = TestDbContextFactory.CreateContext("CreateCheep_NewAuthor_Test");
         var repository = new CheepRepository(context);
 
-        await repository.CreateCheep("NewUser", "test from new user");
+        // when trying to create cheep for a not-existing author, it should throw exception
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await repository.CreateCheep("NonExistingUser", "test from not existent user")
+        );
 
-        var authors = context.Authors.ToList();
-        Assert.Single(authors);
-        Assert.Equal("NewUser", authors[0].Name);
-
-        var cheeps = context.Cheeps.Include(c => c.Author).ToList();
-        Assert.Single(cheeps);
-        Assert.Equal("test from new user", cheeps[0].Text);
-        Assert.Equal("NewUser", cheeps[0].Author.Name);
+        Assert.Contains("does not exist", exception.Message);
+        Assert.Contains("NonExistingUser", exception.Message);
     }
 
     [Fact]
@@ -56,8 +53,18 @@ public class CheepRepositoryTests
     {
         var context = TestDbContextFactory.CreateContext("CreateCheep_Timestamp_Test");
         var repository = new CheepRepository(context);
-        var beforeTime = DateTime.UtcNow.AddSeconds(-1);
 
+        // pre-creating author
+        var author = new Author
+        {
+            Name = "TimeUser",
+            Email = "time@test.com",
+            Cheeps = new List<Cheep>()
+        };
+        context.Authors.Add(author);
+        await context.SaveChangesAsync();
+
+        var beforeTime = DateTime.UtcNow.AddSeconds(-1);
         await repository.CreateCheep("TimeUser", "testing timestamp");
         var afterTime = DateTime.UtcNow.AddSeconds(1);
 
@@ -72,6 +79,16 @@ public class CheepRepositoryTests
         var context = TestDbContextFactory.CreateContext("CreateCheep_GetCheeps_Test");
         var repository = new CheepRepository(context);
 
+        // pre creating author (temporary)
+        var author = new Author
+        {
+            Name = "GetUser",
+            Email = "get@test.com",
+            Cheeps = new List<Cheep>()
+        };
+        context.Authors.Add(author);
+        await context.SaveChangesAsync();
+
         await repository.CreateCheep("GetUser", "testing retrieval message");
 
         var cheeps = repository.GetCheeps();
@@ -85,6 +102,16 @@ public class CheepRepositoryTests
     {
         var context = TestDbContextFactory.CreateContext("CreateCheep_AuthorTimeline_Test");
         var repository = new CheepRepository(context);
+
+        // pre creating authorr (temporary)
+        var author = new Author
+        {
+            Name = "AuthorUser",
+            Email = "author@test.com",
+            Cheeps = new List<Cheep>()
+        };
+        context.Authors.Add(author);
+        await context.SaveChangesAsync();
 
         await repository.CreateCheep("AuthorUser", "test cheep for author");
 

@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 using Chirp.Core.DTO;
+using Chirp.Core.Repositories;
 using Chirp.Infrastructure.Chirp.Services;
 
 using Microsoft.AspNetCore.Mvc;
@@ -22,12 +24,14 @@ public class PublicModel : PageModel
     [Required(ErrorMessage = "Enter a message, please")]
     [StringLength(160, ErrorMessage = "The message can not exceed 160 chars")]
     public string Text { get; set; } = string.Empty;
-    
-    private readonly CheepService _service;
 
-    public PublicModel(CheepService service)
+    private readonly CheepService _service;
+    private readonly IAuthorRepository _authorRepository;
+
+    public PublicModel(CheepService service, IAuthorRepository authorRepository)
     {
         _service = service;
+        _authorRepository = authorRepository;
     }
     public bool ShowPrevious => CurrentPage > 1;
     public bool ShowNext => CurrentPage < TotalPages;
@@ -61,6 +65,12 @@ public class PublicModel : PageModel
             Cheeps = _service.GetCheeps(CurrentPage, PageSize);
             return Page();
         }
+
+        // getting users email
+        var userEmail = User.FindFirstValue(ClaimTypes.Email) ?? $"{authorName}@chirp.dk";
+
+        // makinng sure that author exist in db before creating cheep
+        await _authorRepository.MakeSureAuthorExists(authorName, userEmail);
 
         // creating the cheep
         await _service.CreateCheep(authorName, Text);

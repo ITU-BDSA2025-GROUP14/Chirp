@@ -36,8 +36,9 @@ public class TimelineIntegrationTest
         _context.SaveChanges();
 
         var repo = new CheepRepository(_context);
+        var authorRepo = new AuthorRepository(_context);
         var svc = new CheepService(repo);
-        _pageModel = new UserTimelineModel(svc);
+        _pageModel = new UserTimelineModel(svc, authorRepo);
     }
 
     [Fact]
