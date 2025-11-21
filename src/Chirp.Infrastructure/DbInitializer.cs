@@ -711,13 +711,13 @@ public static class DbInitializer
 
     private static async Task SeedIdentityUsers(UserManager<ApplicationUser> userManager)
     {
-        // seeding helge (i think we're supposed to do this, but plz make sure)
+        // seeding helge (i think we're supposed to do this, to make sure they exist after initDB.sh app startup)
         var helgeEmail = "ropf@itu.dk";
         if (await userManager.FindByEmailAsync(helgeEmail) == null)
         {
             var helgeUser = new ApplicationUser
             {
-                UserName = helgeEmail,
+                UserName = "Helge",
                 Email = helgeEmail,
                 EmailConfirmed = true
             };
@@ -734,7 +734,7 @@ public static class DbInitializer
         {
             var adrianUser = new ApplicationUser
             {
-                UserName = adrianEmail,
+                UserName = "Adrian",
                 Email = adrianEmail,
                 EmailConfirmed = true
             };

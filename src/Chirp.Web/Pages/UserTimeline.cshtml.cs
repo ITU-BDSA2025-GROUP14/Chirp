@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-
 using Chirp.Core.DTO;
 using Chirp.Core.Repositories;
 using Chirp.Infrastructure.Chirp.Services;
@@ -69,10 +68,8 @@ public class UserTimelineModel : PageModel
             return Page();
         }
 
-        // getting users email
+        // making sure thatt the author exists (normally created at login)
         var userEmail = User.FindFirstValue(ClaimTypes.Email) ?? $"{authorName}@chirp.dk";
-
-        // making sure the author exists in the db before creating a cheep
         await _authorRepository.MakeSureAuthorExists(authorName, userEmail);
 
         // create the cheep
