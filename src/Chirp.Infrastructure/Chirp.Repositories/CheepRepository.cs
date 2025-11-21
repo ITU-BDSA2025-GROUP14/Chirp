@@ -62,6 +62,31 @@ public class CheepRepository : ICheepRepository
             .Count(c => c.Author.Name == author);
     }
 
+    public async Task CreateCheep(string authorName, string message)
+    {
+        // finding the author -- it has to already exist from authentication
+        var author = await _context.Authors
+            .FirstOrDefaultAsync(a => a.Name == authorName);
+
+        if (author == null)
+        {
+            throw new InvalidOperationException(
+                $"Author '{authorName}' does not exist. Author has to be created during login/registration before posting cheeps.");
+        }
+
+        // creating cheep
+        var cheep = new Cheep
+        {
+            Author = author,
+            AuthorId = author.AuthorId,
+            Text = message,
+            TimeStamp = DateTime.UtcNow
+        };
+
+        _context.Cheeps.Add(cheep);
+        await _context.SaveChangesAsync();
+    }
+
     private IQueryable<Cheep> BuildCheepQuery()
     {
         return _context.Cheeps

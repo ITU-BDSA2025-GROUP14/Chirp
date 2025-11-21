@@ -50,6 +50,11 @@ public class CheepService
         return _repository.GetTotalCheepCountByAuthor(author);
     }
 
+    public async Task CreateCheep(string authorName, string message)
+    {
+        await _repository.CreateCheep(authorName, message);
+    }
+
     private static CheepDto ToViewModel(global::Chirp.Core.Cheep cheep)
     {
         string authorName = cheep.Author?.Name ?? "Unknown";
