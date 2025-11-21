@@ -71,7 +71,7 @@ public class CheepRepository : ICheepRepository
         if (author == null)
         {
             throw new InvalidOperationException(
-                $"Author '{authorName}' doesn't exist. Author has to be created during login/registration before posting cheeps.");
+                $"Author '{authorName}' does not exist. Author has to be created during login/registration before posting cheeps.");
         }
 
         // creating cheep
