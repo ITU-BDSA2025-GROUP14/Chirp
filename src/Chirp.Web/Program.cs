@@ -5,6 +5,7 @@ using Chirp.Infrastructure.Chirp.Services;
 using Chirp.Infrastructure.Identity;
 using Chirp.Web.Services;
 
+using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -62,7 +63,16 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
     // ensuring that the db is created + migrated
-    db.Database.Migrate();
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (SqliteException ex) when (ex.SqliteErrorCode == 1 && ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+    {
+        // On existing SQLite files without migration history, migrations can fail the first time; in that case continue with the existing schema.
+        Console.WriteLine("SQLite schema already exists; skipping migrations.");
+        db.Database.EnsureCreated();
+    }
 
     // seeding db
     DbInitializer.SeedDatabase(db, userManager);
