@@ -25,13 +25,19 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 builder.Services.AddTransient<IEmailSender, NullEmailSender>();
 
 // configuring github OAuth if the credentials are there
-builder.Services.AddAuthentication()
-    .AddGitHub(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
-        options.CallbackPath = "/signin-github";
-    });
+var githubClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+var githubClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+
+if (!string.IsNullOrEmpty(githubClientId) && !string.IsNullOrEmpty(githubClientSecret))
+{
+    builder.Services.AddAuthentication()
+        .AddGitHub(options =>
+        {
+            options.ClientId = githubClientId;
+            options.ClientSecret = githubClientSecret;
+            options.CallbackPath = "/signin-github";
+        });
+}
 
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<CheepService>();
