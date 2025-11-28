@@ -17,7 +17,52 @@ namespace Chirp.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.21");
 
-            modelBuilder.Entity("Chirp.Razor.Identity.ApplicationUser", b =>
+            modelBuilder.Entity("Chirp.Core.Author", b =>
+                {
+                    b.Property<int>("AuthorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("AuthorId");
+
+                    b.ToTable("Authors");
+                });
+
+            modelBuilder.Entity("Chirp.Core.Cheep", b =>
+                {
+                    b.Property<int>("CheepId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CheepId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Cheeps");
+                });
+
+            modelBuilder.Entity("Chirp.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -79,48 +124,6 @@ namespace Chirp.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Chirp.Razor.Models.Author", b =>
-                {
-                    b.Property<int>("AuthorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("AuthorId");
-
-                    b.ToTable("Authors");
-                });
-
-            modelBuilder.Entity("Chirp.Razor.Models.Cheep", b =>
-                {
-                    b.Property<int>("CheepId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("CheepId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Cheeps");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -255,9 +258,9 @@ namespace Chirp.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.Cheep", b =>
+            modelBuilder.Entity("Chirp.Core.Cheep", b =>
                 {
-                    b.HasOne("Chirp.Razor.Models.Author", "Author")
+                    b.HasOne("Chirp.Core.Author", "Author")
                         .WithMany("Cheeps")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -277,7 +280,7 @@ namespace Chirp.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Chirp.Razor.Identity.ApplicationUser", null)
+                    b.HasOne("Chirp.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -286,7 +289,7 @@ namespace Chirp.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Chirp.Razor.Identity.ApplicationUser", null)
+                    b.HasOne("Chirp.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -301,7 +304,7 @@ namespace Chirp.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Chirp.Razor.Identity.ApplicationUser", null)
+                    b.HasOne("Chirp.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -310,14 +313,14 @@ namespace Chirp.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Chirp.Razor.Identity.ApplicationUser", null)
+                    b.HasOne("Chirp.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Chirp.Razor.Models.Author", b =>
+            modelBuilder.Entity("Chirp.Core.Author", b =>
                 {
                     b.Navigation("Cheeps");
                 });

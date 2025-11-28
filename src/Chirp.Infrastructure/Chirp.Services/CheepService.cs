@@ -61,6 +61,7 @@ public class CheepService
         return new CheepDto(
             authorName,
             cheep.Text,
-            cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"));
+            cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+            cheep.Likes);
     }
 }

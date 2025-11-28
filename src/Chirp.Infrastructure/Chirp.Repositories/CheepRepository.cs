@@ -80,7 +80,8 @@ public class CheepRepository : ICheepRepository
             Author = author,
             AuthorId = author.AuthorId,
             Text = message,
-            TimeStamp = DateTime.UtcNow
+            TimeStamp = DateTime.UtcNow,
+            Likes = 0
         };
 
         _context.Cheeps.Add(cheep);
