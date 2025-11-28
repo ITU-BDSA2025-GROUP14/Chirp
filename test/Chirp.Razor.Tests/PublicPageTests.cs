@@ -24,7 +24,7 @@ public class PublicPageTests
             Name = "Alice",
             Email = "alice@example.com"
         };
-        
+
         _context.Authors.Add(author);
         _context.Cheeps.Add(new Cheep
         {
@@ -33,10 +33,11 @@ public class PublicPageTests
             TimeStamp = DateTime.UtcNow
         });
         _context.SaveChanges();
-        
+
         var repo = new CheepRepository(_context);
+        var authorRepo = new AuthorRepository(_context);
         _service = new CheepService(repo);
-        _pageModel = new PublicModel(_service);
+        _pageModel = new PublicModel(_service, authorRepo);
     }
 
     [Fact]
@@ -56,7 +57,7 @@ public class PublicPageTests
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var author = new Author { Name = "Alice", Email = "alice@example.com" };
         ctx.Authors.Add(author);
-        
+
         for (int i = 0; i < 60; i++)
             ctx.Cheeps.Add(
                 new Cheep
@@ -68,8 +69,9 @@ public class PublicPageTests
         ctx.SaveChanges();
 
         var repo = new CheepRepository(ctx);
+        var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
-        var page = new PublicModel(svc);
+        var page = new PublicModel(svc, authorRepo);
 
         var result = page.OnGet(0); // clamp
         Assert.IsType<PageResult>(result);
@@ -85,8 +87,9 @@ public class PublicPageTests
     {
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var repo = new CheepRepository(ctx);
+        var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
-        var page = new UserTimelineModel(svc);
+        var page = new UserTimelineModel(svc, authorRepo);
 
         var result = page.OnGet("nobody");
         Assert.IsType<PageResult>(result);
@@ -112,8 +115,9 @@ public class PublicPageTests
         ctx.SaveChanges();
 
         var repo = new CheepRepository(ctx);
+        var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
-        var page = new UserTimelineModel(svc) { page = 1 };
+        var page = new UserTimelineModel(svc, authorRepo) { page = 1 };
         page.OnGet("Alice");
 
         // Expect most recent CheepId first
