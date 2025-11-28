@@ -95,4 +95,17 @@ public class CheepRepository : ICheepRepository
             .OrderByDescending(c => c.TimeStamp)
             .ThenByDescending(c => c.CheepId);
     }
+    public int GetCheepLike(int CheepId)
+    {
+        Cheep? cheep = _context.Cheeps.Find(CheepId);
+        return cheep.Likes;
+    }
+
+    public void UpdateCheepLike(int CheepId, int likes)
+    {
+        Cheep? cheep = _context.Cheeps.Find(CheepId);
+        cheep.Likes = likes;
+        _context.SaveChanges();
+    }
+    
 }

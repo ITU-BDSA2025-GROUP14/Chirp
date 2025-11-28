@@ -34,6 +34,10 @@
                         @cheep.Message
                         <small>&mdash; @cheep.Timestamp, @cheep.Likes  likes</small>
                     </p>
+                    <form method="post">
+                        <input type="hidden" name="id" value="@cheep.CheepId"/>
+                        <button type="submit" formaction="/?handler=Like">Like</button>
+                    </form>
                 </li>
             }
         </ul>

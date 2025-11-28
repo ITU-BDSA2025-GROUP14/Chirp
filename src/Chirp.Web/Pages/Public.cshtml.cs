@@ -15,6 +15,7 @@ public class PublicModel : PageModel
     public int CurrentPage { get; set; } = 1;
     public int PageCount { get; set; }
     public int PageSize { get; set; } = 32;
+    public int CheepId { get; set; }
 
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
@@ -46,6 +47,14 @@ public class PublicModel : PageModel
         return Page();
     }
 
+    public async Task<IActionResult> OnPostLikeAsync(int id)
+    {
+        CheepId = id;
+        _service.LikeCheep(CheepId);
+        
+        return RedirectToPage("Public");
+    }
+
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
@@ -69,7 +78,7 @@ public class PublicModel : PageModel
         // getting users email
         var userEmail = User.FindFirstValue(ClaimTypes.Email) ?? $"{authorName}@chirp.dk";
 
-        // makinng sure that author exist in db before creating cheep
+        // making sure that author exists in db before creating cheep
         await _authorRepository.MakeSureAuthorExists(authorName, userEmail);
 
         // creating the cheep
