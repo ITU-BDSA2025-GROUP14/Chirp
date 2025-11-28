@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+
+using Chirp.Core;
 using Chirp.Core.DTO;
 using Chirp.Core.Repositories;
 using Chirp.Infrastructure.Chirp.Services;
@@ -13,6 +15,7 @@ public class UserTimelineModel : PageModel
 {
     private readonly CheepService _service;
     private readonly IAuthorRepository _authorRepository;
+    private readonly IFollowingsRepository _followingsRepository;
 
     public List<CheepDto> Cheeps { get; set; }
 
@@ -21,7 +24,10 @@ public class UserTimelineModel : PageModel
     public int PageCount { get; set; }
     public int PageSize { get; set; } = 32;
     public string Author { get; set; }
-
+    public List<CheepDto>  FollowerCheeps { get; set; }
+        
+    
+   
     [BindProperty]
     [Required(ErrorMessage = "Enter a message, please")]
     [StringLength(160, ErrorMessage = "The message can not exceed 160 chars")]
@@ -29,10 +35,11 @@ public class UserTimelineModel : PageModel
 
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
-    public UserTimelineModel(CheepService service, IAuthorRepository authorRepository)
+    public UserTimelineModel(CheepService service, IAuthorRepository authorRepository, IFollowingsRepository authorFollowingsRepository)
     {
         _service = service;
         _authorRepository = authorRepository;
+        _followingsRepository = authorFollowingsRepository;
     }
 
     public bool ShowPrevious => page > 1;
@@ -74,7 +81,7 @@ public class UserTimelineModel : PageModel
 
         // create the cheep
         await _service.CreateCheep(authorName, Text);
-
+        
         // redirecting to same page so that we prevent resubmission
         return RedirectToPage("/UserTimeline", new { author = author, page = page });
     }

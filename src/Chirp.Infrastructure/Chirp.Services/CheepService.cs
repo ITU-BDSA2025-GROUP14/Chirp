@@ -38,6 +38,20 @@ public class CheepService
             .ToList();
     }
 
+    public List<CheepDto> GetCheepsFromFollowings(List<string> followings)
+    {
+        List<CheepDto> AllCheeps = new List<CheepDto>();
+
+        foreach(var follower in followings)
+        {
+            AllCheeps.AddRange(GetCheepsFromAuthor(follower));
+        }
+
+        return AllCheeps;
+
+    }
+    
+
     public List<CheepDto> GetCheepsFromAuthor(string author, int pageNumber, int pageSize)
     {
         return _repository.GetCheepsFromAuthor(author, pageNumber, pageSize)

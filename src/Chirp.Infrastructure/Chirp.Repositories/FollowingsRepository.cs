@@ -14,30 +14,62 @@ public class FollowingsRepository : IFollowingsRepository
     {
         _context = context;
     }
-    public List<Author> GetFollowing()
-    {
-        return BuildAuthorQuery().ToList();
-    }
 
-    public async Task AddFollowingAsync(int authorId, int followingId)
+    public async Task<List<String>> GetFollowing(string authorName)
+    {
+        //get the current author
+        var author = await _context.Authors
+            .FirstOrDefaultAsync(a => a.Name == authorName);
+
+        if (author == null)
+        {
+            return new List<String>();
+        }
+        //get the users that the current author follows
+        return author.followings.ToList();
+    }
+    
+    public async Task<bool> AddToFollowing(string authorName, string targetName)
     {
         var author = await _context.Authors
-            .Include(a => a.followings)
-            .FirstOrDefaultAsync(a  => a.AuthorId == authorId);
+            .FirstOrDefaultAsync(a  => a.Name == authorName );
+        
+        var target = await _context.Authors
+            .FirstOrDefaultAsync(a => a.Name == targetName);
         
         
-        var following = await _context.Authors.FindAsync(followingId);
-
-        if (author != null && following != null && !author.followings.Contains(following))
+        if (author != null || target != null)
         {
-            author.followings.Add(following);
-            await _context.SaveChangesAsync();  
+           return false; 
         }
-    }
 
-    public Task RemoveFollowing()
+        if (!author.followings.Contains(targetName))
+        {
+            author.followings.Add(targetName);
+            await _context.SaveChangesAsync();
+        }
+
+        return true;
+    }
+    
+    public async Task<bool> RemoveFollowing(string authorName, string targetName)
     {
-        throw new NotImplementedException();
+        var author = await _context.Authors
+            .FirstOrDefaultAsync(a  => a.Name == authorName);
+        var  target = await _context.Authors
+            .FirstOrDefaultAsync(a => a.Name == targetName);
+        
+        if (author != null || target != null)
+        {
+            return false;
+        }
+
+        if (author.followings.Contains(targetName))
+        {
+            author.followings.Remove(targetName);
+            await _context.SaveChangesAsync();
+        }
+        return true;
     }
 
     public IQueryable<Author> BuildAuthorQuery()

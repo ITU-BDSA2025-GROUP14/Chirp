@@ -74,6 +74,7 @@ public class PublicModel : PageModel
 
         // creating the cheep
         await _service.CreateCheep(authorName, Text);
+        
 
         // redirecting to same page in order to prevent resubmissions
         return RedirectToPage("/Public", new { page = CurrentPage });

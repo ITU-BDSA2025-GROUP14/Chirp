@@ -31,6 +31,7 @@ public class CheepRepository : ICheepRepository
             .ToList();
     }
 
+
     public int GetTotalCheepCount()
     {
         return _context.Cheeps.Count();
@@ -54,6 +55,15 @@ public class CheepRepository : ICheepRepository
             .Take(pageSize)
             .ToList();
     }
+
+    public List<Cheep> GetCheepsFromFollowings(List<Author> followings){
+        List<Cheep> AllCheeps = new List<Cheep>();
+
+        foreach (var follower in followings){
+            AllCheeps.AddRange(GetCheepsFromAuthor(follower.Name));
+        }    
+        return AllCheeps;
+    }    
 
     public int GetTotalCheepCountByAuthor(string author)
     {
