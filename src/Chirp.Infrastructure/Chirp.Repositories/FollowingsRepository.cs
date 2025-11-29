@@ -38,7 +38,7 @@ public class FollowingsRepository : IFollowingsRepository
             .FirstOrDefaultAsync(a => a.Name == targetName);
         
         
-        if (author != null || target != null)
+        if (author == null || target == null)
         {
            return false; 
         }
@@ -59,7 +59,7 @@ public class FollowingsRepository : IFollowingsRepository
         var  target = await _context.Authors
             .FirstOrDefaultAsync(a => a.Name == targetName);
         
-        if (author != null || target != null)
+        if (author == null || target == null)
         {
             return false;
         }
