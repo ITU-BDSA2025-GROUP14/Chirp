@@ -56,14 +56,18 @@ public class CheepRepository : ICheepRepository
             .ToList();
     }
 
-    public List<Cheep> GetCheepsFromFollowings(List<Author> followings){
-        List<Cheep> AllCheeps = new List<Cheep>();
-
-        foreach (var follower in followings){
-            AllCheeps.AddRange(GetCheepsFromAuthor(follower.Name));
-        }    
-        return AllCheeps;
-    }    
+    public List<Cheep> GetCheepsFromFollowings(List<string> followings, string author, int pageNumber, int pageSize){
+        pageNumber = Math.Max(pageNumber, 1);
+        int skip = (pageNumber - 1) * pageSize;
+        
+        var authorNames = new List<string>(followings) { author };
+        authorNames.Add(author);
+        return BuildCheepQuery()
+            .Where(c => authorNames.Contains(c.Author.Name))
+            .Skip(skip)
+            .Take(pageSize)
+            .ToList();
+    } 
 
     public int GetTotalCheepCountByAuthor(string author)
     {
@@ -96,7 +100,73 @@ public class CheepRepository : ICheepRepository
         _context.Cheeps.Add(cheep);
         await _context.SaveChangesAsync();
     }
+    
+    public int GetTotalCheepCountFromFollowings(List<string> followings, string author)
+    {
+        var authorNames = new List<string>(followings) { author };
+    
+        return _context.Cheeps
+            .Include(c => c.Author)
+            .Count(c => authorNames.Contains(c.Author.Name));
+    }
+    
+    public async Task<List<String>> GetFollowing(string authorName)
+    {
+        //get the current author
+        var author = await _context.Authors
+            .FirstOrDefaultAsync(a => a.Name == authorName);
 
+        if (author == null)
+        {
+            return new List<String>();
+        }
+        //get the users that the current author follows
+        return author.followings.ToList();
+    }
+    
+    public async Task<bool> AddToFollowing(string authorName, string targetName)
+    {
+        var author = await _context.Authors
+            .FirstOrDefaultAsync(a  => a.Name == authorName );
+        
+        var target = await _context.Authors
+            .FirstOrDefaultAsync(a => a.Name == targetName);
+        
+        
+        if (author == null || target == null)
+        {
+            return false; 
+        }
+
+        if (!author.followings.Contains(targetName))
+        {
+            author.followings.Add(targetName);
+            await _context.SaveChangesAsync();
+        }
+
+        return true;
+    }
+    
+    public async Task<bool> RemoveFollowing(string authorName, string targetName)
+    {
+        var author = await _context.Authors
+            .FirstOrDefaultAsync(a  => a.Name == authorName);
+        var  target = await _context.Authors
+            .FirstOrDefaultAsync(a => a.Name == targetName);
+        
+        if (author == null || target == null)
+        {
+            return false;
+        }
+
+        if (author.followings.Contains(targetName))
+        {
+            author.followings.Remove(targetName);
+            await _context.SaveChangesAsync();
+        }
+        return true;
+    }
+    
     private IQueryable<Cheep> BuildCheepQuery()
     {
         return _context.Cheeps
