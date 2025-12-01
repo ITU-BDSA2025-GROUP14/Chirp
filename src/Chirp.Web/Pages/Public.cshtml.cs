@@ -37,7 +37,7 @@ public class PublicModel : PageModel
     }
     public bool ShowPrevious => CurrentPage > 1;
     public bool ShowNext => CurrentPage < TotalPages;
-    public List<string>? FollowingList { get; set; }
+    public List<string>? FollowingList { get; set; } = new List<string>();
     
     public async Task<ActionResult> OnGetAsync([FromQuery] int page = 1)
     {
@@ -110,8 +110,7 @@ public class PublicModel : PageModel
             return RedirectToPage("/Public", new { page = CurrentPage });
         }
         
-        var success = await _followingRepository.AddToFollowing(authorName, targetName);
-        Console.WriteLine($"Follow result: {success}, Author: {authorName}, Target: {targetName}");
+        await _followingRepository.AddToFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage });
     }
 
@@ -122,8 +121,7 @@ public class PublicModel : PageModel
         {
             return RedirectToPage("/Public", new { page = CurrentPage });
         }
-        var success = await _followingRepository.RemoveFollowing(authorName, targetName);
-        Console.WriteLine($"Follow result: {success}, Author: {authorName}, Target: {targetName}");
+       await _followingRepository.RemoveFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage });
     }
 
