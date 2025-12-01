@@ -46,8 +46,17 @@ public class UserTimelineModel : PageModel
     public async Task<ActionResult> OnGetAsync(string author)
     {
         Author = author;
+
+        if (User.Identity.Name == author)
+        {
         PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
-        Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
+        Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
+        }
+        else
+        {
+            PageCount = _service.GetTotalCheepCountByAuthor(author);
+            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+        }
         
         if (User.Identity?.IsAuthenticated == true)
         {
