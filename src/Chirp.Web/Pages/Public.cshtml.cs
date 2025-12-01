@@ -27,13 +27,11 @@ public class PublicModel : PageModel
 
     private readonly CheepService _service;
     private readonly IAuthorRepository _authorRepository;
-    private readonly IFollowingsRepository _followingRepository;
 
-    public PublicModel(CheepService service, IAuthorRepository authorRepository, IFollowingsRepository followingsRepository)
+    public PublicModel(CheepService service, IAuthorRepository authorRepository)
     {
         _service = service;
         _authorRepository = authorRepository;
-        _followingRepository = followingsRepository;
     }
     public bool ShowPrevious => CurrentPage > 1;
     public bool ShowNext => CurrentPage < TotalPages;
@@ -53,7 +51,7 @@ public class PublicModel : PageModel
             var authorName = User.Identity.Name;
             if (!string.IsNullOrEmpty(authorName))
             {
-                FollowingList = await _followingRepository.GetFollowing(authorName);
+                FollowingList = await _service.GetFollowing(authorName);
             }
         }
 
@@ -73,7 +71,7 @@ public class PublicModel : PageModel
                 var userName = User.Identity.Name;
                 if (!string.IsNullOrEmpty(userName))
                 {
-                    FollowingList = await _followingRepository.GetFollowing(userName);
+                    FollowingList = await _service.GetFollowing(userName);
                 }
             }
             return Page();
@@ -110,7 +108,7 @@ public class PublicModel : PageModel
             return RedirectToPage("/Public", new { page = CurrentPage });
         }
         
-        await _followingRepository.AddToFollowing(authorName, targetName);
+        await _service.AddToFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage });
     }
 
@@ -121,7 +119,7 @@ public class PublicModel : PageModel
         {
             return RedirectToPage("/Public", new { page = CurrentPage });
         }
-       await _followingRepository.RemoveFollowing(authorName, targetName);
+       await _service.RemoveFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage });
     }
 

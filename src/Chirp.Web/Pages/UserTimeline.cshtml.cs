@@ -15,7 +15,6 @@ public class UserTimelineModel : PageModel
 {
     private readonly CheepService _service;
     private readonly IAuthorRepository _authorRepository;
-    private readonly IFollowingsRepository _followingRepository;
 
     public List<CheepDto> Cheeps { get; set; }
 
@@ -35,22 +34,30 @@ public class UserTimelineModel : PageModel
 
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
-    public UserTimelineModel(CheepService service, IAuthorRepository authorRepository, IFollowingsRepository authorFollowingsRepository)
+    public UserTimelineModel(CheepService service, IAuthorRepository authorRepository)
     {
         _service = service;
         _authorRepository = authorRepository;
-        _followingRepository = authorFollowingsRepository;
     }
 
     public bool ShowPrevious => page > 1;
     public bool ShowNext => page < TotalPages;
-    public List<string>? FollowingList { get; set; }
-
+    public List<string>? FollowingList { get; set; } = new List<string>();
     public async Task<ActionResult> OnGetAsync(string author)
     {
         Author = author;
-        PageCount = _service.GetTotalCheepCountByAuthor(author);
-        Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+        PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
+        Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
+        
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var authorName = User.Identity.Name;
+            if (!string.IsNullOrEmpty(authorName))
+            {
+                FollowingList = await _service.GetFollowing(authorName);
+            }
+        }
+    
         return Page();
     }
 
@@ -61,10 +68,8 @@ public class UserTimelineModel : PageModel
         if (!ModelState.IsValid)
         {
             // reloading page with validaition errsors
-            PageCount = _service.GetTotalCheepCountByAuthor(author);
-            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
-
-            FollowingList = await _followingRepository.GetFollowing(author);
+            PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
+            Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
             return Page();
         }
 
@@ -73,8 +78,8 @@ public class UserTimelineModel : PageModel
         if (string.IsNullOrEmpty(authorName))
         {
             ModelState.AddModelError(string.Empty, "You must be logged in to post a cheep");
-            PageCount = _service.GetTotalCheepCountByAuthor(author);
-            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+            PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
+            Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
             return Page();
         }
 
@@ -89,16 +94,18 @@ public class UserTimelineModel : PageModel
         return RedirectToPage("/UserTimeline", new { author = author, page = page });
     }
     
+    
     public async Task<IActionResult> OnPostFollowAsync(string author, string targetName)
     {
         var authorName = User.Identity?.Name;
+        // reloading page if no valid user
         if (string.IsNullOrEmpty(authorName))
         {
             return RedirectToPage("/UserTimeline", new { author = author, page = page });
         }
         
-        var success = await _followingRepository.AddToFollowing(authorName, targetName);
-        Console.WriteLine($"Follow result: {success}, Author: {authorName}, Target: {targetName}");
+        await _service.AddToFollowing(authorName, targetName);
+        FollowingList = await _service.GetFollowing(authorName);
         return RedirectToPage("/UserTimeline", new { author = author, page = page });
     }
 
@@ -109,8 +116,8 @@ public class UserTimelineModel : PageModel
         {
             return RedirectToPage("/UserTimeline", new { author = author, page = page });
         }
-        var success = await _followingRepository.RemoveFollowing(authorName, targetName);
-        Console.WriteLine($"Follow result: {success}, Author: {authorName}, Target: {targetName}");
+        await _service.RemoveFollowing(authorName, targetName);
+        FollowingList = await _service.GetFollowing(authorName);
         return RedirectToPage("/UserTimeline", new { author = author, page = page });
     }
 }
