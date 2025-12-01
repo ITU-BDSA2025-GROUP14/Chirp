@@ -11,7 +11,19 @@ public static class DbInitializer
 {
     public static void SeedDatabase(ChirpDbContext chirpContext, UserManager<ApplicationUser> userManager)
     {
-        if (!(chirpContext.Authors.Any() && chirpContext.Cheeps.Any()))
+        // always seed identity users (since they have their own existence checks)
+        SeedIdentityUsers(userManager).GetAwaiter().GetResult();
+
+        // quick exit if it is already seeded
+        if (chirpContext.Cheeps.Any())
+        {
+            return;
+        }
+
+        // we disable change tracking so we can do faster bulk insert
+        chirpContext.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        try
         {
             var a1 = new Author() { AuthorId = 1, Name = "Roger Histand", Email = "Roger+Histand@hotmail.com", Cheeps = new List<Cheep>(), followings = new List<string>()};
             var a2 = new Author() { AuthorId = 2, Name = "Luanna Muro", Email = "Luanna-Muro@ku.dk", Cheeps = new List<Cheep>(), followings = new List<string>() };
@@ -704,9 +716,11 @@ public static class DbInitializer
             chirpContext.Cheeps.AddRange(cheeps);
             chirpContext.SaveChanges();
         }
-
-        // seeding identity test users
-        SeedIdentityUsers(userManager).Wait();
+        finally
+        {
+            // aaaand then we re enable change tracking for the "normal" operations
+            chirpContext.ChangeTracker.AutoDetectChangesEnabled = true;
+        }
     }
 
     private static async Task SeedIdentityUsers(UserManager<ApplicationUser> userManager)
