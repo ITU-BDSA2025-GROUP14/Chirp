@@ -43,7 +43,7 @@ public class PublicPageTests
     [Fact]
     public void OnGet_ShouldLoadCheepsAndReturnPage()
     {
-        var result = _pageModel.OnGet(1);
+        var result = _pageModel.OnGetAsync(1);
 
         Assert.IsType<PageResult>(result);
         Assert.NotEmpty(_pageModel.Cheeps);
@@ -73,7 +73,7 @@ public class PublicPageTests
         var svc = new CheepService(repo);
         var page = new PublicModel(svc, authorRepo);
 
-        var result = page.OnGet(0); // clamp
+        var result = page.OnGetAsync(0); // clamp
         Assert.IsType<PageResult>(result);
         Assert.Equal(1, page.CurrentPage);
         Assert.Equal(60, page.PageCount);
@@ -91,7 +91,7 @@ public class PublicPageTests
         var svc = new CheepService(repo);
         var page = new UserTimelineModel(svc, authorRepo);
 
-        var result = page.OnGet("nobody");
+        var result = page.OnGetAsync("nobody");
         Assert.IsType<PageResult>(result);
         Assert.Equal("nobody", page.Author);
         Assert.Empty(page.Cheeps);
@@ -118,7 +118,7 @@ public class PublicPageTests
         var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
         var page = new UserTimelineModel(svc, authorRepo) { page = 1 };
-        page.OnGet("Alice");
+        page.OnGetAsync("Alice");
 
         // Expect most recent CheepId first
         Assert.Equal(new[] { "A", "B" }, page.Cheeps.Select(c => c.Message).ToArray());

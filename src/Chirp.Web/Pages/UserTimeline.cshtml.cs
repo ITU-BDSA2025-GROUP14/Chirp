@@ -47,7 +47,7 @@ public class UserTimelineModel : PageModel
     {
         Author = author;
 
-        if (User.Identity.Name == author)
+        if (User.Identity.Name == author && User.Identity?.IsAuthenticated == true)
         {
         PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
         Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);

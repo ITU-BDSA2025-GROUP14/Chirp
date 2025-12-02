@@ -44,7 +44,7 @@ public class TimelineIntegrationTest
     [Fact]
     public void OnGet_ShouldLoadUserCheeps()
     {
-        var result = _pageModel.OnGet("Alice");
+        var result = _pageModel.OnGetAsync("Alice");
 
         Assert.IsType<PageResult>(result);
         Assert.Equal("Alice", _pageModel.Author);
