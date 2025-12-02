@@ -8,6 +8,8 @@ using Chirp.Web.Pages;
 using Chirp.Razor;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 public class PublicPageTests
 {
@@ -38,12 +40,19 @@ public class PublicPageTests
         var authorRepo = new AuthorRepository(_context);
         _service = new CheepService(repo);
         _pageModel = new PublicModel(_service, authorRepo);
+        _pageModel.PageContext = new PageContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
+        };
     }
 
     [Fact]
-    public void OnGet_ShouldLoadCheepsAndReturnPage()
+    public async Task OnGet_ShouldLoadCheepsAndReturnPage()
     {
-        var result = _pageModel.OnGetAsync(1);
+        var result = await _pageModel.OnGetAsync(1);
 
         Assert.IsType<PageResult>(result);
         Assert.NotEmpty(_pageModel.Cheeps);
@@ -52,7 +61,7 @@ public class PublicPageTests
     }
     
     [Fact]
-    public void Public_OnGet_PageLessThanOne_ClampsTo1()
+    public async Task Public_OnGet_PageLessThanOne_ClampsTo1()
     {
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var author = new Author { Name = "Alice", Email = "alice@example.com" };
@@ -67,13 +76,21 @@ public class PublicPageTests
                     TimeStamp = DateTime.UtcNow.AddSeconds(-i)
                 });
         ctx.SaveChanges();
-
+        
         var repo = new CheepRepository(ctx);
         var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
         var page = new PublicModel(svc, authorRepo);
+        
+        page.PageContext = new PageContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
+        };
 
-        var result = page.OnGetAsync(0); // clamp
+        var result = await page.OnGetAsync(0); // clamp
         Assert.IsType<PageResult>(result);
         Assert.Equal(1, page.CurrentPage);
         Assert.Equal(60, page.PageCount);
@@ -83,15 +100,23 @@ public class PublicPageTests
     }
 
     [Fact]
-    public void Timeline_OnGet_UnknownAuthor_ReturnsEmpty()
+    public async Task Timeline_OnGet_UnknownAuthor_ReturnsEmpty()
     {
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var repo = new CheepRepository(ctx);
         var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
         var page = new UserTimelineModel(svc, authorRepo);
+        
+        page.PageContext = new PageContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
+        };
 
-        var result = page.OnGetAsync("nobody");
+        var result = await page.OnGetAsync("nobody");
         Assert.IsType<PageResult>(result);
         Assert.Equal("nobody", page.Author);
         Assert.Empty(page.Cheeps);
@@ -101,7 +126,7 @@ public class PublicPageTests
     }
 
     [Fact]
-    public void Timeline_Order_IsStable_WhenTimestampsEqual()
+    public async Task Timeline_Order_IsStable_WhenTimestampsEqual()
     {
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var author = new Author { Name = "Alice", Email = "alice@example.com" };
@@ -118,7 +143,16 @@ public class PublicPageTests
         var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
         var page = new UserTimelineModel(svc, authorRepo) { page = 1 };
-        page.OnGetAsync("Alice");
+        
+        page.PageContext = new PageContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
+        };
+        
+        await page.OnGetAsync("Alice");
 
         // Expect most recent CheepId first
         Assert.Equal(new[] { "A", "B" }, page.Cheeps.Select(c => c.Message).ToArray());
