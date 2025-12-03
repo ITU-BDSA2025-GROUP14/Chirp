@@ -25,13 +25,19 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 builder.Services.AddTransient<IEmailSender, NullEmailSender>();
 
 // configuring github OAuth if the credentials are there
-builder.Services.AddAuthentication()
-    .AddGitHub(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
-        options.CallbackPath = "/signin-github";
-    });
+var githubClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+var githubClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+
+if (!string.IsNullOrEmpty(githubClientId) && !string.IsNullOrEmpty(githubClientSecret))
+{
+    builder.Services.AddAuthentication()
+        .AddGitHub(options =>
+        {
+            options.ClientId = githubClientId;
+            options.ClientSecret = githubClientSecret;
+            options.CallbackPath = "/signin-github";
+        });
+}
 
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<CheepService>();
@@ -60,10 +66,12 @@ using (var scope = app.Services.CreateScope())
     {
         db.Database.Migrate();
     }
-    catch (SqliteException ex) when (ex.SqliteErrorCode == 1 && ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+    catch (SqliteException ex)
     {
-        // On existing SQLite files without migration history, migrations can fail the first time; in that case continue with the existing schema.
-        Console.WriteLine("SQLite schema already exists; skipping migrations.");
+        // we log the error
+        Console.WriteLine($"SQLite migration warning: {ex.Message}");
+
+        // only create create if db dont exist at all
         db.Database.EnsureCreated();
     }
 
@@ -81,23 +89,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();
-app.Use(async (context, next) =>
-{
-    if (context.User?.Identity?.IsAuthenticated == true)
-    {
-        var authorRepository = context.RequestServices.GetRequiredService<IAuthorRepository>();
-        var userManager = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-        var user = await userManager.GetUserAsync(context.User);
-        if (user != null)
-        {
-            var authorName = user.UserName ?? user.Email ?? "unknown-user";
-            var authorEmail = user.Email ?? $"{authorName}@chirp.dk";
-            await authorRepository.MakeSureAuthorExists(authorName, authorEmail);
-        }
-    }
-
-    await next();
-});
 app.UseAuthorization();
 
 app.MapRazorPages();
