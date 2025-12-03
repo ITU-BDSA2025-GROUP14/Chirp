@@ -5,7 +5,9 @@ using Chirp.Infrastructure.Chirp.Services;
 using Chirp.Web.Pages;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 using Xunit;
 
@@ -39,12 +41,20 @@ public class TimelineIntegrationTest
         var authorRepo = new AuthorRepository(_context);
         var svc = new CheepService(repo);
         _pageModel = new UserTimelineModel(svc, authorRepo);
+        
+        _pageModel.PageContext = new PageContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
+        };
     }
 
     [Fact]
-    public void OnGet_ShouldLoadUserCheeps()
+    public async Task OnGet_ShouldLoadUserCheeps()
     {
-        var result = _pageModel.OnGet("Alice");
+        var result = await _pageModel.OnGetAsync("Alice");
 
         Assert.IsType<PageResult>(result);
         Assert.Equal("Alice", _pageModel.Author);

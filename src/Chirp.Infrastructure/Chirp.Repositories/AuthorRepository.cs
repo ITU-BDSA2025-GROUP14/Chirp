@@ -33,7 +33,8 @@ public class AuthorRepository : IAuthorRepository
         {
             Name = name,
             Email = email,
-            Cheeps = new List<Cheep>()
+            Cheeps = new List<Cheep>(),
+            followings = new List<string>()
         };
 
         _context.Authors.Add(newAuthor);

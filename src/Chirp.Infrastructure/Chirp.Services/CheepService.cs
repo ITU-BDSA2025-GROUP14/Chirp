@@ -38,6 +38,14 @@ public class CheepService
             .ToList();
     }
 
+    public List<CheepDto> GetCheepsFromFollowings(List<string> followings,  string author, int pageNumber, int pageSize)
+    {
+        return _repository.GetCheepsFromFollowings(followings, author, pageNumber, pageSize)
+            .Select(ToViewModel)
+            .ToList();
+    }
+    
+
     public List<CheepDto> GetCheepsFromAuthor(string author, int pageNumber, int pageSize)
     {
         return _repository.GetCheepsFromAuthor(author, pageNumber, pageSize)
@@ -48,6 +56,11 @@ public class CheepService
     public int GetTotalCheepCountByAuthor(string author)
     {
         return _repository.GetTotalCheepCountByAuthor(author);
+    }
+    
+    public int GetTotalCheepCountFromFollowings(List<string> followings, string author)
+    {
+        return _repository.GetTotalCheepCountFromFollowings(followings, author);
     }
 
     public async Task CreateCheep(string authorName, string message)
@@ -63,4 +76,21 @@ public class CheepService
             cheep.Text,
             cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"));
     }
+
+    public async Task<List<String>> GetFollowing(string authorName)
+    {
+        List<string> followings = await _repository.GetFollowing(authorName);
+        return followings;
+    }
+
+    public async Task<bool> RemoveFollowing(string authorName, string targetName)
+    {
+        return await _repository.RemoveFollowing(authorName, targetName);
+    }
+
+    public async Task<bool> AddToFollowing(string authorName, string targetName)
+    {
+        return await _repository.AddToFollowing(authorName, targetName);
+    }
+    
 }

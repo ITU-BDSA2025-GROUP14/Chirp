@@ -35,13 +35,25 @@ public class PublicModel : PageModel
     }
     public bool ShowPrevious => CurrentPage > 1;
     public bool ShowNext => CurrentPage < TotalPages;
-    public ActionResult OnGet([FromQuery] int page = 1)
+    public List<string>? FollowingList { get; set; } = new List<string>();
+    
+    public async Task<ActionResult> OnGetAsync([FromQuery] int page = 1)
     {
         page = Math.Max(page, 1);
         CurrentPage = page;
 
         PageCount = _service.GetTotalCheepCount();
         Cheeps = _service.GetCheeps(CurrentPage, PageSize);
+
+        // Load following list for authenticated users
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var authorName = User.Identity.Name;
+            if (!string.IsNullOrEmpty(authorName))
+            {
+                FollowingList = await _service.GetFollowing(authorName);
+            }
+        }
 
         return Page();
     }
@@ -53,6 +65,15 @@ public class PublicModel : PageModel
             // reloadng the page with validation errors
             PageCount = _service.GetTotalCheepCount();
             Cheeps = _service.GetCheeps(CurrentPage, PageSize);
+            
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userName = User.Identity.Name;
+                if (!string.IsNullOrEmpty(userName))
+                {
+                    FollowingList = await _service.GetFollowing(userName);
+                }
+            }
             return Page();
         }
 
@@ -74,8 +95,31 @@ public class PublicModel : PageModel
 
         // creating the cheep
         await _service.CreateCheep(authorName, Text);
-
+        
         // redirecting to same page in order to prevent resubmissions
+        return RedirectToPage("/Public", new { page = CurrentPage });
+    }
+
+    public async Task<IActionResult> OnPostFollowAsync(string targetName)
+    {
+        var authorName = User.Identity?.Name;
+        if (string.IsNullOrEmpty(authorName))
+        {
+            return RedirectToPage("/Public", new { page = CurrentPage });
+        }
+        
+        await _service.AddToFollowing(authorName, targetName);
+        return RedirectToPage("/Public", new { page = CurrentPage });
+    }
+
+    public async Task<IActionResult> OnPostUnfollowAsync(string targetName)
+    {
+        var authorName = User.Identity?.Name;
+        if (string.IsNullOrEmpty(authorName))
+        {
+            return RedirectToPage("/Public", new { page = CurrentPage });
+        }
+       await _service.RemoveFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage });
     }
 
