@@ -94,7 +94,8 @@ public class CheepRepository : ICheepRepository
             Author = author,
             AuthorId = author.AuthorId,
             Text = message,
-            TimeStamp = DateTime.UtcNow
+            TimeStamp = DateTime.UtcNow,
+            Likes = 0
         };
 
         _context.Cheeps.Add(cheep);
@@ -173,5 +174,17 @@ public class CheepRepository : ICheepRepository
             .Include(c => c.Author)
             .OrderByDescending(c => c.TimeStamp)
             .ThenByDescending(c => c.CheepId);
+    }
+    public int GetCheepLike(int CheepId)
+    {
+        Cheep? cheep = _context.Cheeps.Find(CheepId);
+        return cheep.Likes;
+    }
+
+    public void UpdateCheepLike(int CheepId, int likes)
+    {
+        Cheep? cheep = _context.Cheeps.Find(CheepId);
+        cheep.Likes = likes;
+        _context.SaveChanges();
     }
 }

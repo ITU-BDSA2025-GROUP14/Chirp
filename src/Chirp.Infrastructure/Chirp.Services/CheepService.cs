@@ -1,6 +1,8 @@
 using Chirp.Core.DTO;
 using Chirp.Core.Repositories;
 
+using Microsoft.AspNetCore.Components.Sections;
+
 namespace Chirp.Infrastructure.Chirp.Services;
 
 public class CheepService
@@ -72,9 +74,21 @@ public class CheepService
     {
         string authorName = cheep.Author?.Name ?? "Unknown";
         return new CheepDto(
+            cheep.CheepId,
             authorName,
             cheep.Text,
-            cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"));
+            cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+            cheep.Likes);
+    }
+    
+    public void LikeCheep(int cheepId)
+    {
+        Console.WriteLine($"Liking cheep {cheepId}");
+        Console.WriteLine("Before: " + _repository.GetCheepLike(cheepId));
+        _repository.UpdateCheepLike(
+            cheepId,
+            _repository.GetCheepLike(cheepId)+1);
+        Console.WriteLine("After: " + _repository.GetCheepLike(cheepId));
     }
 
     public async Task<List<String>> GetFollowing(string authorName)
