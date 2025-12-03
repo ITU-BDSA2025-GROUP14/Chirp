@@ -11,4 +11,9 @@ public interface ICheepRepository
     Task CreateCheep(string authorName, string message);
     int GetCheepLike(int cheepId);
     void UpdateCheepLike(int cheepId, int likes);
+    public List<Cheep> GetCheepsFromFollowings(List<string> followings, string author, int pageNumber, int pageSize);
+    int GetTotalCheepCountFromFollowings(List<string> followings, string author);
+    Task<List<String>> GetFollowing(string authorName);
+    Task<bool> AddToFollowing(string authorName, string targetName);
+    Task<bool> RemoveFollowing(string authorName, string targetName);
 }

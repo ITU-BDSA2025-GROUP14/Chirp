@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+
+using Chirp.Core;
 using Chirp.Core.DTO;
 using Chirp.Core.Repositories;
 using Chirp.Infrastructure.Chirp.Services;
@@ -21,7 +23,10 @@ public class UserTimelineModel : PageModel
     public int PageCount { get; set; }
     public int PageSize { get; set; } = 32;
     public string Author { get; set; }
-
+    public List<CheepDto>  FollowerCheeps { get; set; }
+        
+    
+   
     [BindProperty]
     [Required(ErrorMessage = "Enter a message, please")]
     [StringLength(160, ErrorMessage = "The message can not exceed 160 chars")]
@@ -37,12 +42,31 @@ public class UserTimelineModel : PageModel
 
     public bool ShowPrevious => page > 1;
     public bool ShowNext => page < TotalPages;
-
-    public ActionResult OnGet(string author)
+    public List<string>? FollowingList { get; set; } = new List<string>();
+    public async Task<ActionResult> OnGetAsync(string author)
     {
         Author = author;
-        PageCount = _service.GetTotalCheepCountByAuthor(author);
-        Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+
+        if (User.Identity.Name == author && User.Identity?.IsAuthenticated == true)
+        {
+        PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
+        Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
+        }
+        else
+        {
+            PageCount = _service.GetTotalCheepCountByAuthor(author);
+            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+        }
+        
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var authorName = User.Identity.Name;
+            if (!string.IsNullOrEmpty(authorName))
+            {
+                FollowingList = await _service.GetFollowing(authorName);
+            }
+        }
+    
         return Page();
     }
 
@@ -53,8 +77,8 @@ public class UserTimelineModel : PageModel
         if (!ModelState.IsValid)
         {
             // reloading page with validaition errsors
-            PageCount = _service.GetTotalCheepCountByAuthor(author);
-            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+            PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
+            Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
             return Page();
         }
 
@@ -63,8 +87,8 @@ public class UserTimelineModel : PageModel
         if (string.IsNullOrEmpty(authorName))
         {
             ModelState.AddModelError(string.Empty, "You must be logged in to post a cheep");
-            PageCount = _service.GetTotalCheepCountByAuthor(author);
-            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+            PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
+            Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
             return Page();
         }
 
@@ -74,8 +98,35 @@ public class UserTimelineModel : PageModel
 
         // create the cheep
         await _service.CreateCheep(authorName, Text);
-
+        
         // redirecting to same page so that we prevent resubmission
+        return RedirectToPage("/UserTimeline", new { author = author, page = page });
+    }
+    
+    
+    public async Task<IActionResult> OnPostFollowAsync(string author, string targetName)
+    {
+        var authorName = User.Identity?.Name;
+        // reloading page if no valid user
+        if (string.IsNullOrEmpty(authorName))
+        {
+            return RedirectToPage("/UserTimeline", new { author = author, page = page });
+        }
+        
+        await _service.AddToFollowing(authorName, targetName);
+        FollowingList = await _service.GetFollowing(authorName);
+        return RedirectToPage("/UserTimeline", new { author = author, page = page });
+    }
+
+    public async Task<IActionResult> OnPostUnfollowAsync(string author, string targetName)
+    {
+        var authorName = User.Identity?.Name;
+        if (string.IsNullOrEmpty(authorName))
+        {
+            return RedirectToPage("/UserTimeline", new { author = author, page = page });
+        }
+        await _service.RemoveFollowing(authorName, targetName);
+        FollowingList = await _service.GetFollowing(authorName);
         return RedirectToPage("/UserTimeline", new { author = author, page = page });
     }
 }
