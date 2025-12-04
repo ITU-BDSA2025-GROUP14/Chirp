@@ -37,10 +37,9 @@ public class PublicModel : PageModel
     public bool ShowNext => CurrentPage < TotalPages;
     public List<string>? FollowingList { get; set; } = new List<string>();
     
-    public async Task<ActionResult> OnGetAsync(int? pageNumber = 1, int? page = null)
+    public async Task<ActionResult> OnGetAsync(int? pageNumber = 1)
     {
-        // prefer explicit pageNumber, but fall back to "page" for callers/tests that still use it
-        var resolvedPage = pageNumber ?? page ?? 1;
+        var resolvedPage = pageNumber ?? 1;
         resolvedPage = Math.Max(resolvedPage, 1);
         CurrentPage = resolvedPage;
 
