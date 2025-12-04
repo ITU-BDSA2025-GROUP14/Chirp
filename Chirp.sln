@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.Razor.Tests", "test\Chirp.Razor.Tests\Chirp.Razor.Tests.csproj", "{FE2F6B04-CA1B-4060-8C8E-85457186A09E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chirp.PlaywrightTests", "test\Chirp.PlaywrightTests\Chirp.PlaywrightTests.csproj", "{6293075C-66E5-4527-9890-B7916BEAA043}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,18 @@ Global
 		{FE2F6B04-CA1B-4060-8C8E-85457186A09E}.Release|x64.Build.0 = Release|Any CPU
 		{FE2F6B04-CA1B-4060-8C8E-85457186A09E}.Release|x86.ActiveCfg = Release|Any CPU
 		{FE2F6B04-CA1B-4060-8C8E-85457186A09E}.Release|x86.Build.0 = Release|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Debug|x64.Build.0 = Debug|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Debug|x86.Build.0 = Debug|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Release|x64.ActiveCfg = Release|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Release|x64.Build.0 = Release|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Release|x86.ActiveCfg = Release|Any CPU
+		{6293075C-66E5-4527-9890-B7916BEAA043}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,5 +96,6 @@ Global
 		{02AD8555-8AEF-4502-8FCA-31352D666D0D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{D60B6FA8-4D3B-458A-B492-1C92DD479515} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{FE2F6B04-CA1B-4060-8C8E-85457186A09E} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
+		{6293075C-66E5-4527-9890-B7916BEAA043} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 	EndGlobalSection
 EndGlobal
