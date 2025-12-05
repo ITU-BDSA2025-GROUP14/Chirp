@@ -124,7 +124,6 @@ public class PublicModel : PageModel
         if (string.IsNullOrEmpty(authorName))
         {
             return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
-
         }
         
         await _service.AddToFollowing(authorName, targetName);
