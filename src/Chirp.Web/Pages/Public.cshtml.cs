@@ -115,7 +115,6 @@ public class PublicModel : PageModel
         
         // redirecting to same page in order to prevent resubmissions
         return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
-
     }
 
     public async Task<IActionResult> OnPostFollowAsync(string targetName)
