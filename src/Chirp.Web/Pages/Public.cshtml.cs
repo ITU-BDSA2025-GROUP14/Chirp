@@ -67,7 +67,6 @@ public class PublicModel : PageModel
         
         return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
 
-
     }
 
     public async Task<IActionResult> OnPostAsync()
