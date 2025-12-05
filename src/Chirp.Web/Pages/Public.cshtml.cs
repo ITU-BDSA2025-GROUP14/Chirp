@@ -137,7 +137,6 @@ public class PublicModel : PageModel
         if (string.IsNullOrEmpty(authorName))
         {
             return RedirectToPage("/Public", new { pageNumber = CurrentPage });
-
         }
         await _service.RemoveFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
