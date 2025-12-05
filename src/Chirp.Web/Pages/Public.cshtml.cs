@@ -140,7 +140,6 @@ public class PublicModel : PageModel
         }
         await _service.RemoveFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
-
     }
 
     private int GetCurrentPageFromQuery()
