@@ -128,7 +128,6 @@ public class PublicModel : PageModel
         
         await _service.AddToFollowing(authorName, targetName);
         return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
-
     }
 
     public async Task<IActionResult> OnPostUnfollowAsync(string targetName)
