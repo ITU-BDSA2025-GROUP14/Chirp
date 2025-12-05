@@ -24,12 +24,9 @@ public class UserTimelineModel : PageModel
     public int PageSize { get; set; } = 32;
     public string Author { get; set; }
     public List<CheepDto>  FollowerCheeps { get; set; }
-        
     
-   
     [BindProperty]
     [Required(ErrorMessage = "Enter a message, please")]
-    [StringLength(160, ErrorMessage = "The message can not exceed 160 chars")]
     public string Text { get; set; } = string.Empty;
 
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
@@ -73,6 +70,11 @@ public class UserTimelineModel : PageModel
     public async Task<IActionResult> OnPostAsync(string author)
     {
         Author = author;
+
+        if (!string.IsNullOrEmpty(Text) && Text.Length > 160)
+        {
+            ModelState.AddModelError(nameof(Text), "The message can not exceed 160 chars");
+        }
 
         if (!ModelState.IsValid)
         {

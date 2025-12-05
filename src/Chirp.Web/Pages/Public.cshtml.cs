@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Chirp.Web.Pages;
 public class PublicModel : PageModel
 {
-    [BindProperty(SupportsGet = true)]
     public int CurrentPage { get; set; } = 1;
+
     public int PageCount { get; set; }
     public int PageSize { get; set; } = 32;
     public int CheepId { get; set; }
@@ -23,7 +23,6 @@ public class PublicModel : PageModel
 
     [BindProperty]
     [Required(ErrorMessage = "Enter a message, please")]
-    [StringLength(160, ErrorMessage = "The message can not exceed 160 chars")]
     public string Text { get; set; } = string.Empty;
 
     private readonly CheepService _service;
@@ -38,10 +37,11 @@ public class PublicModel : PageModel
     public bool ShowNext => CurrentPage < TotalPages;
     public List<string>? FollowingList { get; set; } = new List<string>();
     
-    public async Task<ActionResult> OnGetAsync([FromQuery] int page = 1)
+    public async Task<ActionResult> OnGetAsync(int? pageNumber = 1)
     {
-        page = Math.Max(page, 1);
-        CurrentPage = page;
+        var resolvedPage = pageNumber ?? 1;
+        resolvedPage = Math.Max(resolvedPage, 1);
+        CurrentPage = resolvedPage;
 
         PageCount = _service.GetTotalCheepCount();
         Cheeps = _service.GetCheeps(CurrentPage, PageSize);
@@ -61,14 +61,22 @@ public class PublicModel : PageModel
 
     public async Task<IActionResult> OnPostLikeAsync(int id)
     {
+        CurrentPage = GetCurrentPageFromQuery();
         CheepId = id;
         _service.LikeCheep(CheepId);
         
-        return RedirectToPage("Public");
+        return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
+
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
+        CurrentPage = GetCurrentPageFromQuery();
+        if (!string.IsNullOrEmpty(Text) && Text.Length > 160)
+        {
+            ModelState.AddModelError(nameof(Text), "The message can not exceed 160 chars");
+        }
+
         if (!ModelState.IsValid)
         {
             // reloadng the page with validation errors
@@ -106,30 +114,47 @@ public class PublicModel : PageModel
         await _service.CreateCheep(authorName, Text);
         
         // redirecting to same page in order to prevent resubmissions
-        return RedirectToPage("/Public", new { page = CurrentPage });
+        return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
     }
 
     public async Task<IActionResult> OnPostFollowAsync(string targetName)
     {
+        CurrentPage = GetCurrentPageFromQuery();
         var authorName = User.Identity?.Name;
         if (string.IsNullOrEmpty(authorName))
         {
-            return RedirectToPage("/Public", new { page = CurrentPage });
+            return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
         }
         
         await _service.AddToFollowing(authorName, targetName);
-        return RedirectToPage("/Public", new { page = CurrentPage });
+        return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
     }
 
     public async Task<IActionResult> OnPostUnfollowAsync(string targetName)
     {
+        CurrentPage = GetCurrentPageFromQuery();
         var authorName = User.Identity?.Name;
         if (string.IsNullOrEmpty(authorName))
         {
-            return RedirectToPage("/Public", new { page = CurrentPage });
+            return RedirectToPage("/Public", new { pageNumber = CurrentPage });
         }
-       await _service.RemoveFollowing(authorName, targetName);
-        return RedirectToPage("/Public", new { page = CurrentPage });
+        await _service.RemoveFollowing(authorName, targetName);
+        return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
     }
 
+    private int GetCurrentPageFromQuery()
+    {
+        if (int.TryParse(Request.Query["pageNumber"], out var page) && page > 0)
+        {
+            return page;
+        }
+
+        if (int.TryParse(Request.Query["page"], out var legacyPage) && legacyPage > 0)
+        {
+            return legacyPage;
+        }
+
+        // fall back to whatever was already set on the model (e.g., in tests) before defaulting to 1
+        return CurrentPage > 0 ? CurrentPage : 1;
+    }
 }

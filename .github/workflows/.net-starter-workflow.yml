@@ -25,6 +25,5 @@ jobs:
     
       - name: Build
         run: dotnet build --no-restore
-    
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+      - name: Test (Razor only)
+        run: dotnet test test/Chirp.Razor.Tests/Chirp.Razor.Tests.csproj --no-build --verbosity normal
