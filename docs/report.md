@@ -44,28 +44,89 @@ Describe the illustration briefly, i.e., how your application is built, tested, 
 ## Team work
 Show a screenshot of your project board right before hand-in. Briefly describe which tasks are still unresolved, i.e., which features are missing from your applications or which functionality is incomplete.
 
-Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub, and transformed each requirement into a GitHub issue. \
-We as a group went through each requirement individually and created success criteria for the requirement, as well as a user story and a small description to make sure each requirement would be implemented satisfactorily. \
-At the beginning we had neither a description or a user story, as we misinterpreted the way to create issues, but we've afterwards edited all issues to contain both things, and it made development a lot easier. Each issue was then issued to a single person, who would then work on the issue from start to completion. As the issue is assigned, we've moved it into "In development" in our project board.\
- We made use of pair programming, making sure a lot of the slightly meatier issues, had two developers looking at it at once, and making sure knowledge was spread out throughout the group. We've tried to adhere to trunk-based development, branching out, and merging into the ‘main’ stream at the start and end of a day, but larger issues have been allowed to live for longer. \
-We've had issues creating continuous releases, as our tagging of branches and features has not been too carefully considered, which means we have a lot fewer releases, than one might expect to see from a project of this scale. \
-At the end of development of a feature, a pull request is opened, and someone who's not been a part of development is assigned to review the PR such that knowledge of the feature is shared across the group, without everyone having to actively be part of developing every feature. Once the pull request has been reviewed and accepted, given no merge conflicts, and the branch building with GitHub workflows, and all tests pass, the development branch will be merged into the ‘main’ branch, and the development branch is to be deleted.\
- We have done our best to follow this flow, though there's been times where a branch has been forgotten, and thus lived longer, or we've felt it necessary to keep it alive, to easily access what changes had been made. Once everything is reviewed, accepted, and merged into ‘main’, the issue will be moved to done, and then closed.\
+Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub, and transformed each requirement into a GitHub issue.
 
+We as a group went through each requirement individually and created success criteria for the requirement, as well as a user story and a small description to make sure each requirement would be implemented satisfactorily.
 
+At the beginning we had neither a description or a user story, as we misinterpreted the way to create issues, but we've afterwards edited all issues to contain both things, and it made development a lot easier. Each issue was then issued to a single person, who would then work on the issue from start to completion. As the issue is assigned, we've moved it into "In development" in our project board.
+
+ We made use of pair programming, making sure a lot of the slightly meatier issues, had two developers looking at it at once, and making sure knowledge was spread out throughout the group. We've tried to adhere to trunk-based development, branching out, and merging into the ‘main’ stream at the start and end of a day, but larger issues have been allowed to live for longer.
+ 
+We've had issues creating continuous releases, as our tagging of branches and features has not been too carefully considered, which means we have a lot fewer releases, than one might expect to see from a project of this scale.
+
+At the end of development of a feature, a pull request is opened, and someone who's not been a part of development is assigned to review the PR such that knowledge of the feature is shared across the group, without everyone having to actively be part of developing every feature. Once the pull request has been reviewed and accepted, given no merge conflicts, and the branch building with GitHub workflows, and all tests pass, the development branch will be merged into the ‘main’ branch, and the development branch is to be deleted.
+
+ We have done our best to follow this flow, though there's been times where a branch has been forgotten, and thus lived longer, or we've felt it necessary to keep it alive, to easily access what changes had been made. Once everything is reviewed, accepted, and merged into ‘main’, the issue will be moved to done, and then closed.
+ 
 
 ## How to make _Chirp!_ work locally
-There has to be some documentation on how to come from cloning your project to a running system. That is, Adrian or Helge have to know precisely what to do in which order. Likely, it is best to describe how we clone your project, which commands we have to execute, and what we are supposed to see then.
+To clone the project you need to have Git installed on your local machine
+- [Install Git](https://git-scm.com/install/)
+
+When Git is installed, run the following command in your terminal, or the Git CLI
+```
+git clone https://github.com/ITU-BDSA2025-GROUP14/Chirp.git
+```
+
+To run the Chirp project you need to have .NET 9 installed
+- [Install .NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+
+After you have cloned the repository down to your local machine, navigate to the Chirp.Web folder of the project using following command
+```
+cd ./chirp/src/Chirp.web
+```
+
+Now run the following commands, to setup authentication secrets locally
+```
+dotnet user-secrets init
+dotnet user-secrets set "Authentication:GitHub:ClientId" "Ov23licogNiZV33XuQcv"
+dotnet user-secrets set "Authentication:GitHub:ClientSecret" "ff78c1b915997b82cc74bddf8e72248884954cb3"
+```
+Now you should be able to run the project using
+
+```
+dotnet run
+```
+The project will be running locally on http://localhost:5273. Navigating to this address should take you to the front page of the Chirp! application where you're able to see all posted cheeps, and you can login, to begin posting your own cheeps locally!
 
 ## How to run test suite locally
-List all necessary steps that Adrian or Helge have to perform to execute your test suites. Here, you can assume that we already cloned your repository in the step above.
+To run the test suite locally please have .NET 9 and Playwright installed. You need to use the terminal to run the commands needed for running the tests.
+- Install Playwright
+- Install .NET
 
-Briefly describe what kinds of tests you have in your test suites and what they are testing.
-We have 
+Run the following commands in your terminal in the root of the Chirp project.
+```
+dotnet build
+```
+
+```
+dotnet test
+```
+
+## Test suits
+To prevent bugs and ensure requirements from issues are fulfilled, we have several test suites in our repository. namely we have Unit tests, Integration tests, and End-to-End tests and UI tests.
+
+The structure of the tests are as follows
+```
+Project root
+|-- test
+    |-- Chirp.PlaywrightTests
+    |-- Chirp.Razor.Tests
+```
+
+The Chirp.PlaywrightTests folder contains UI and end-to-end tests, the Chirp.Razor.Tests folder contains the remaining tests.
+
+### Chirp.PlaywrightTests
+This folder contains the following tests
+- PlayWrightTestBase
+- PostCheepFlowTests
+- RegisterTest
+
+The `PlayWrightTestBase` contains the base setup for the UI tests, settiung up a browser, giving it context, and settiung up playwright, whereas `PostCheepFlowTests` and `RegisterTest` each tests different UI functionality, with either logging in, and posting a cheep, or registering a new user. Many more UI tests could be made, but because of the time restrictions we've chosen these to make up the most important functionality to be tested in our project.
+
+### Chirp.Razor.Tests
 
 # Ethics
-
-
 ## License
 We've chosen to use an MIT License as it gives us the most freedom for our project. It grants us the rights to modify and distribute our project as we see fit, and allows other to use our code in their own projects, as long as Attribution I.E the original copyright notice and license text is included in the software.
 
