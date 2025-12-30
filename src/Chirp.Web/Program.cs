@@ -81,7 +81,15 @@ using (var scope = app.Services.CreateScope())
     // ensuring that the db is created + migrated
     try
     {
-        db.Database.Migrate();
+        // skipping migrations for in memory db (used in tests)
+        if (db.Database.IsRelational())
+        {
+            db.Database.Migrate();
+        }
+        else
+        {
+            db.Database.EnsureCreated();
+        }
     }
     catch (SqliteException ex)
     {
@@ -122,3 +130,5 @@ app.MapRazorPages();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
