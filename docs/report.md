@@ -136,7 +136,8 @@ The workflow:
 
 
 ## Teamwork
-Show a screenshot of your project board right before hand-in. Briefly describe which tasks are still unresolved, i.e., which features are missing from your applications or which functionality is incomplete.
+![image](./Images/project-board.png)
+We've gotten around about every required task as specified in the day-to-day project description in Github. A final End-2-End test using playwright to get around the entire project in a single test has not been made, and is therefore in progress still, though smaller UI tests using Playwright has been created, and are all fully functional.
 
 Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub, and transformed each requirement into a GitHub issue.
 
