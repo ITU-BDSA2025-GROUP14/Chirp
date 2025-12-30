@@ -297,3 +297,40 @@ ul.navbar-nav button:hover {
     color: #571010;
 }
 
+.like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 1em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.like-btn:hover {
+    background-color: rgba(204, 110, 110, 0.1);
+}
+
+.like-btn .heart {
+    font-size: 1.1em;
+    color: #888;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.like-btn .heart.liked {
+    color: #cc6e6e;
+}
+
+.like-btn:hover .heart {
+    transform: scale(1.1);
+}
+
+.like-btn .count {
+    font-size: 0.9em;
+    color: #888;
+}
+
