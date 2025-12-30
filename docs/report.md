@@ -71,9 +71,12 @@ A client can access the website using the link `https://bdsagroup14chirprazor.az
 ![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
-Illustrate typical scenarios of a user journey through your Chirp! application. That is, start illustrating the first page that is presented to a non-authorized user, illustrate what a non-authorized user can do with your Chirp! application, and finally illustrate what a user can do after authentication.
+When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their Github. Similarly users can log in with those credentials or with their Github account that they have linked.
 
-Make sure that the illustrations are in line with the actual behavior of your application.
+Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can logout anytime from their account. There is also a tab that where it is possible to manage your account details. From here you can download your user data, delete your account, autenticate with Github (if you have not already), and edit account details.
+
+The UML Diagram shows the order in which users can complete these various activities wether they start as an unauthenticated user or not.
+![image]()
 
 ## Sequence of functionality/calls trough _Chirp!_
 Below is a UML sequence diagram visualizing a logged in user, creating a new cheep in the Chirp project. It starts with a HTTP post request, which triggers the OnPostAsync method, going through the `AuthorRepository` checking an author exists in the database, before creating the cheep, using the `CreateCheep` method in the `CheepService` going through the `CheepRepository` to create the new cheep in the database.
