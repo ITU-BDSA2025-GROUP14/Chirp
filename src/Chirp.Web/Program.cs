@@ -40,9 +40,11 @@ if (!string.IsNullOrEmpty(githubClientId) && !string.IsNullOrEmpty(githubClientS
 }
 
 builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 builder.Services.AddScoped<CheepService>();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 
@@ -92,5 +94,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapControllers();
 
 app.Run();
