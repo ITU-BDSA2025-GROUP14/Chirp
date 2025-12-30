@@ -114,7 +114,9 @@
                     });
 
                     if (response.status === 401) {
-                        window.location.href = '/Identity/Account/Login';
+                        if (confirm('You need to be logged in to like cheeps. Would you like to log in or register?')) {
+                            window.location.href = '/Identity/Account/Login';
+                        }
                         return;
                     }
 

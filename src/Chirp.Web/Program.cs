@@ -24,6 +24,21 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddDefaultTokenProviders();
 builder.Services.AddTransient<IEmailSender, NullEmailSender>();
 
+// making Identity return 401 for API endpoints instead of redirecting
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
+
 // configuring github OAuth if the credentials are there
 var githubClientId = builder.Configuration["Authentication:GitHub:ClientId"];
 var githubClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
