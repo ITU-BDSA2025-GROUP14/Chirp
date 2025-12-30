@@ -18,7 +18,7 @@ numbersections: true
   - [Sequence of functionality/calls trough _Chirp!_](#sequence-of-functionalitycalls-trough-chirp)
 - [Process](#process)
   - [Build, test, release, and deployment](#build-test-release-and-deployment)
-  - [Team work](#team-work)
+  - [Teamwork](#team-work)
   - [How to make _Chirp!_ work locally](#how-to-make-chirp-work-locally)
   - [How to run test suite locally](#how-to-run-test-suite-locally)
   - [Test suits](#test-suits)
@@ -54,11 +54,54 @@ Make sure that your illustration is complete. That is, likely for many of you th
 # Process
 
 ## Build, test, release, and deployment
-Illustrate with a UML activity diagram how your Chirp! applications are build, tested, released, and deployed. That is, illustrate the flow of activities in your respective GitHub Actions workflows.
+![The three GitHub Actions workflows that are used in the Chirp! project: Continuous Integration, Continuous Deployment, and Release Management](Images/cicd-activity-diagram.png)
 
-Describe the illustration briefly, i.e., how your application is built, tested, released, and deployed.
+The above diagram illustrates the three GitHub Actions workflows that are used in the Chirp! project: Continuous Integration, Continuous Deployment, and Release Management.
 
-## Team work
+### Continuous Integration (Build & Test)
+The .NET workflow runs automatically on every push to the main branch, as well as every pull request targeting main. This means that all code changes are validated before being merged.
+
+The workflow executes these following steps:
+1. Checkout: clones the repository
+2. Setup .NET 8: installs the .NET 8 SDK
+3. Restore Dependencies: downloads all NuGet packages
+4. Build: compiles the solution
+5. Test: runs the Chirp.Razor.Tests test suite (unit and integration tests)
+
+Only the Razor tests are executed in CI, since the Playwright E2E tests requires the server to be running and browser infrastructure, which is not configured in this workflow.
+
+### Continuous Deployment (Azure)
+The deployment workflow is triggered automatically on every push to the main branch, and can also be triggered manually via workflow_dispatch. It consists of two jobs: build and deploy.
+
+The Build job:
+1. Checkout: clones the repository
+2. Setup .NET 8: installs the .NET 8 SDK
+3. Build Release: compiles Chirp.Web in Release configuration
+4. Publish: creates deployment ready output
+5. Upload Artifact: stores the published output for the deploy job
+
+The Deploy job (runs after build completes):
+1. Download Artifact: retrieves the published output
+2. Deploy to Azure Web App: Deploys to bdsagroup14chirprazor using a publish profile which is stored in GitHub Secrets
+
+The application is deployed to Azure App Service in the Production slot.
+
+
+### Release Management (GitHub Releases + Versioning)
+The release workflow is triggered when a version tag which matches v*.*.* (e.g., v1.5.1) is pushed to the repository, and it follows semantic versioning.
+
+The workflow:
+1. Checkout: clones the repository
+2. Setup .NET 8: installs the .NET 8 SDK
+3. Restore Dependencies: downloads all NuGet packages
+4. Build: compiles the solution
+5. Test: runs all of the tests to make sure the release is stable
+6. Publish: creates executables for Windows (win-x64), macOS (osx-x64), and Linux (linux-x64)
+7. Create ZIP Archives: packages each platform's output
+8. Create GitHub Release: publishes the release with all three ZIP files as downloadable artifacts.
+
+
+## Teamwork
 Show a screenshot of your project board right before hand-in. Briefly describe which tasks are still unresolved, i.e., which features are missing from your applications or which functionality is incomplete.
 
 Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub, and transformed each requirement into a GitHub issue.
@@ -67,13 +110,13 @@ We as a group went through each requirement individually and created success cri
 
 At the beginning we had neither a description or a user story, as we misinterpreted the way to create issues, but we've afterwards edited all issues to contain both things, and it made development a lot easier. Each issue was then issued to a single person, who would then work on the issue from start to completion. As the issue is assigned, we've moved it into "In development" in our project board.
 
- We made use of pair programming, making sure a lot of the slightly meatier issues, had two developers looking at it at once, and making sure knowledge was spread out throughout the group. We've tried to adhere to trunk-based development, branching out, and merging into the ‘main’ stream at the start and end of a day, but larger issues have been allowed to live for longer.
+We made use of pair programming, making sure a lot of the slightly meatier issues, had two developers looking at it at once, and making sure knowledge was spread out throughout the group. We've tried to adhere to trunk-based development, branching out, and merging into the ‘main’ stream at the start and end of a day, but larger issues have been allowed to live for longer.
  
-We've had issues creating continuous releases, as our tagging of branches and features has not been too carefully considered, which means we have a lot fewer releases, than one might expect to see from a project of this scale.
+We have had issues creating continuous releases, since we were unaware that Git tags had to be explicitly pushed to GitHub (git push --tags) to trigger the release workflow. This resulted in fewer version tags and fewer automated releases than intended.
 
 At the end of development of a feature, a pull request is opened, and someone who's not been a part of development is assigned to review the PR such that knowledge of the feature is shared across the group, without everyone having to actively be part of developing every feature. Once the pull request has been reviewed and accepted, given no merge conflicts, and the branch building with GitHub workflows, and all tests pass, the development branch will be merged into the ‘main’ branch, and the development branch is to be deleted.
 
- We have done our best to follow this flow, though there's been times where a branch has been forgotten, and thus lived longer, or we've felt it necessary to keep it alive, to easily access what changes had been made. Once everything is reviewed, accepted, and merged into ‘main’, the issue will be moved to done, and then closed.
+We have done our best to follow this flow, though there's been times where a branch has been forgotten, and thus lived longer, or we've felt it necessary to keep it alive, to easily access what changes had been made. Once everything is reviewed, accepted, and merged into ‘main’, the issue will be moved to done, and then closed.
  
 
 ## How to make _Chirp!_ work locally
@@ -85,8 +128,8 @@ When Git is installed, run the following command in your terminal, or the Git CL
 git clone https://github.com/ITU-BDSA2025-GROUP14/Chirp.git
 ```
 
-To run the Chirp project you need to have .NET 9 installed
-- [Install .NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+To run the Chirp project you need to have .NET 8 installed
+- [Install .NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 After you have cloned the repository down to your local machine, navigate to the Chirp.Web folder of the project using following command
 ```
@@ -111,7 +154,7 @@ To run the test suite locally please have .NET 9 and Playwright installed. You n
 - Install Playwright
 - Install .NET
 
-To install .NET see the previous section of the report.
+To install .NET see the last section of the report.
 
 To install PlayWright, navigate to the `Chirp.PlayWrightTests` and install the required browsers using the following commands using powershell.
 ```
