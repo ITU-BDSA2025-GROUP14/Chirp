@@ -1,15 +1,15 @@
-﻿---
-title: _Chirp!_ Project Report
-subtitle: ITU BDSA 2025 Group `14`
+---
+title: "_Chirp!_ Project Report"
+subtitle: "ITU BDSA 2025 Group `14`"
 author:
-- "Andreas Faber <afab@itu.dk>"
-- "Christian Dam <cacd@itu.dk>"
-- "Philip Nielsen <pann@itu.dk>"
-- "Peter Raasthøj <praa@itu.dk>"
-- "Søren Bräuner <brae@itu.dk>"
-  
+  - "Andreas Faber <afab@itu.dk>"
+  - "Christian Dam <cacd@itu.dk>"
+  - "Philip Nielsen <pann@itu.dk>"
+  - "Peter Raasthøj <praa@itu.dk>"
+  - "Søren Bräuner <brae@itu.dk>"
 numbersections: true
 ---
+
 - [Design and Architecture of _Chirp!_](#design-and-architecture-of-chirp)
   - [Domain model](#domain-model)
   - [Architecture — In the small](#architecture--in-the-small)
