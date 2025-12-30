@@ -8,5 +8,5 @@ public class Author
     public ICollection<Cheep> Cheeps { get; set; }
     public List<string> followings { get; set; } = new List<string>();
     public List<string> followers { get; set; } = new List<string>();
-
+    public ICollection<Like> Likes { get; set; } = new List<Like>();
 }
