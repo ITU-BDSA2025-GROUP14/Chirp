@@ -47,9 +47,11 @@ Illustrate typical scenarios of a user journey through your Chirp! application. 
 Make sure that the illustrations are in line with the actual behavior of your application.
 
 ## Sequence of functionality/calls trough _Chirp!_
-With a UML sequence diagram, illustrate the flow of messages and data through your Chirp! application. Start with an HTTP request that is send by an unauthorized user to the root endpoint of your application and end with the completely rendered web-page that is returned to the user.
+Below is a UML sequence diagram visualizing a logged in user, creating a new cheep in the Chirp project. It starts with a HTTP post request, which triggers the OnPostAsync method, going through the `AuthorRepository` checking an author exists in the database, before creating the cheep, using the `CreateCheep` method in the `CheepService` going through the `CheepRepository` to create the new cheep in the database.
 
-Make sure that your illustration is complete. That is, likely for many of you there will be different kinds of "calls" and responses. Some HTTP calls and responses, some calls and responses in C# and likely some more. (Note the previous sentence is vague on purpose. I want that you create a complete illustration.)
+When the Cheep has been created the user will be redirected to the start page through a HTTP GET request, once again going through the `CheepService` and `CheepRepository` to get all cheeps posted and their authors from the database, and finally displaying all cheeps, as well as the newly created cheep, to the user, sending a 200 OK request to the browser from the webserver.
+![image](./Images/Sequence%20of%20functionality.jpg)
+
 
 # Process
 
