@@ -30,14 +30,24 @@ numbersections: true
 # Design and Architecture of _Chirp!_
 
 ## Domain model
-Provide an illustration of your domain model. Make sure that it is correct and complete. In case you are using ASP.NET Identity, make sure to illustrate that accordingly.
-Here comes a description of our domain model.
+The Domain model illustrates the main concepts of the Chirp! project, namely Authors and Cheeps. We've implemented Likes as a core concept as well. The IdentityUser is connected to the Author by matching of username at runtime. When a logged-in user posts, the author name finds, or creates the author based on their username. The identity framework handle authentication, and the Author entity models the concept in the code, and are not formally related besides through username matching.
 
+The Author entity contains information about a User, their relationship with Cheeps, as well as followers/followings, and posts they've liked.
+The Cheep entity contains information of who wrote the cheep, as well as who's liked the cheep.
+The Like entity contains information about who've liked which tweet, and when. It's the relationship between an author liking a cheep, and the cheep itself.
+
+Where the Author and Cheep contains lists of the other entities as they are one to many/many to many relations, the Like entity is a one-to-one relation between a Cheep and an Author.
+
+##Validation and Constraints
+- For the Cheep entity, validation is made to ensure a cheep doesn't exceed 160 characters.
+-  When a new cheep is created a validation check to see if a user is logged in is made, as well as to check if the ApplicationUser has an Author created/associated. If not, a new Author is made and linked based on the username of the user.
+-  Validation weather a user is logged in or not, when trying to like a message is also in place.
+
+![image](./Images/Domain%20model.jpg)
 ![Illustration of the _Chirp!_ data model as UML class diagram.](docs/images/domain_model.png)
 
 ## Architecture — In the small
-Illustrate the organization of your code base. That is, illustrate which layers exist in your (onion) architecture. Make sure to illustrate which part of your code is residing in which layer.
-
+This diagram shows the architecture of our Chirp! project, and how each part
 ## Architecture of deployed application
 Illustrate the architecture of your deployed application. Remember, you developed a client-server application. Illustrate the server component and to where it is deployed, illustrate a client component, and show how these communicate with each other.
 
