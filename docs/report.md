@@ -38,18 +38,33 @@ The Like entity contains information about who've liked which tweet, and when. I
 
 Where the Author and Cheep contains lists of the other entities as they are one to many/many to many relations, the Like entity is a one-to-one relation between a Cheep and an Author.
 
-##Validation and Constraints
+## Validation and Constraints
 - For the Cheep entity, validation is made to ensure a cheep doesn't exceed 160 characters.
 -  When a new cheep is created a validation check to see if a user is logged in is made, as well as to check if the ApplicationUser has an Author created/associated. If not, a new Author is made and linked based on the username of the user.
 -  Validation weather a user is logged in or not, when trying to like a message is also in place.
 
 ![image](./Images/Domain%20model.jpg)
-![Illustration of the _Chirp!_ data model as UML class diagram.](docs/images/domain_model.png)
 
 ## Architecture — In the small
-This diagram shows the architecture of our Chirp! project, and how each part
+![image](./Images/Onion%20Architecture.jpg)
+This diagram shows the architecture of our Chirp! project as orginized after onion architecture, creating seperation of concerns between each part of the project. The four layers depicted are as follows:
+
+#### 1. Domain Layer (Core)
+This layer contains the core business concepts of the project such as `Author`, `Cheep`, `Like` as wekk as the DTO's and repository interfaces which the next layer can interact with.
+There's no EF Core, web application or database code on this layer.
+
+#### 2. Repository Layer
+This layer implements data access contracts from the domain, and this is the layer in which data access as well as data persistance is handled. Repositories for accessing data is required in this layer. The database also fits in this layer, as this is where the direct access to the database is made using the repositories.
+
+#### 3. Service Layer
+The service layer contains acts as a mediator between the application and repository layers. In this layer the CheepService lives, which has access to `AuthorRepository`, `CheepRepository` and `LikeRepository`, which the webserver uses (through the service layer) to get access to the database. This layer prepares data accessed through the Repository layer, and serves it to the application layer.
+
+#### 4. Application and Test Layer
+The last layer contains the webserver, as this is the presentation and entry point. This layer depends on services and repositories via Dependency injection. This is also the layer where we find the test suites for the webserver Razor tests, as well as the End-2-End UI tests using Playwright
+
 ## Architecture of deployed application
-Illustrate the architecture of your deployed application. Remember, you developed a client-server application. Illustrate the server component and to where it is deployed, illustrate a client component, and show how these communicate with each other.
+The Chirp! Application is hosted on an Azure webhost. Whenever anyone merges a pullrequest into the main branch on Github, the Github ACTIONS 
+![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
 Illustrate typical scenarios of a user journey through your Chirp! application. That is, start illustrating the first page that is presented to a non-authorized user, illustrate what a non-authorized user can do with your Chirp! application, and finally illustrate what a user can do after authentication.
