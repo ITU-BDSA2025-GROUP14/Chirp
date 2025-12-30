@@ -18,8 +18,8 @@ public class UserTimelineModel : PageModel
 
     public List<CheepDto> Cheeps { get; set; }
 
-    [BindProperty(SupportsGet = true)]
-    public int page { get; set; } = 1;
+    [FromQuery(Name = "page")]
+    public int PageNum { get; set; } = 1;
     public int PageCount { get; set; }
     public int PageSize { get; set; } = 32;
     public string Author { get; set; }
@@ -37,8 +37,8 @@ public class UserTimelineModel : PageModel
         _authorRepository = authorRepository;
     }
 
-    public bool ShowPrevious => page > 1;
-    public bool ShowNext => page < TotalPages;
+    public bool ShowPrevious => PageNum > 1;
+    public bool ShowNext => PageNum < TotalPages;
     public List<string>? FollowingList { get; set; } = new List<string>();
     public async Task<ActionResult> OnGetAsync(string author)
     {
@@ -47,12 +47,12 @@ public class UserTimelineModel : PageModel
         if (User.Identity.Name == author && User.Identity?.IsAuthenticated == true)
         {
         PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
-        Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
+        Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, PageNum, PageSize);
         }
         else
         {
             PageCount = _service.GetTotalCheepCountByAuthor(author);
-            Cheeps = _service.GetCheepsFromAuthor(author, page, PageSize);
+            Cheeps = _service.GetCheepsFromAuthor(author, PageNum, PageSize);
         }
         
         if (User.Identity?.IsAuthenticated == true)
@@ -78,9 +78,10 @@ public class UserTimelineModel : PageModel
 
         if (!ModelState.IsValid)
         {
-            // reloading page with validaition errsors
+            // reloading page with validation errors
             PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
-            Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
+            Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, PageNum, PageSize);
+            FollowingList = await _service.GetFollowing(User.Identity?.Name ?? "");
             return Page();
         }
 
@@ -90,7 +91,7 @@ public class UserTimelineModel : PageModel
         {
             ModelState.AddModelError(string.Empty, "You must be logged in to post a cheep");
             PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
-            Cheeps =  _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, page, PageSize);
+            Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, PageNum, PageSize);
             return Page();
         }
 
@@ -102,7 +103,7 @@ public class UserTimelineModel : PageModel
         await _service.CreateCheep(authorName, Text);
         
         // redirecting to same page so that we prevent resubmission
-        return RedirectToPage("/UserTimeline", new { author = author, page = page });
+        return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
     }
     
     
@@ -112,12 +113,12 @@ public class UserTimelineModel : PageModel
         // reloading page if no valid user
         if (string.IsNullOrEmpty(authorName))
         {
-            return RedirectToPage("/UserTimeline", new { author = author, page = page });
+            return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
         }
-        
+
         await _service.AddToFollowing(authorName, targetName);
         FollowingList = await _service.GetFollowing(authorName);
-        return RedirectToPage("/UserTimeline", new { author = author, page = page });
+        return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
     }
 
     public async Task<IActionResult> OnPostUnfollowAsync(string author, string targetName)
@@ -125,10 +126,10 @@ public class UserTimelineModel : PageModel
         var authorName = User.Identity?.Name;
         if (string.IsNullOrEmpty(authorName))
         {
-            return RedirectToPage("/UserTimeline", new { author = author, page = page });
+            return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
         }
         await _service.RemoveFollowing(authorName, targetName);
         FollowingList = await _service.GetFollowing(authorName);
-        return RedirectToPage("/UserTimeline", new { author = author, page = page });
+        return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
     }
 }

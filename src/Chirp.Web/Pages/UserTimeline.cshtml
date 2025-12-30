@@ -13,6 +13,7 @@
         <div class="cheepbox">
             <h3>What's on your mind @(User.Identity.Name)?</h3>
             <form method="post" style="display:flex; gap:8px; align-items:flex-start;">
+                @Html.AntiForgeryToken()
                 <input type="text" asp-for="Text" />
                 <input type="submit" value="Share" />
             </form>
@@ -72,13 +73,13 @@
         @if (Model.ShowPrevious)
         {
             <li class="">
-                <a href="/@Model.Author?page=@(Model.page - 1)">Previous</a>
+                <a href="/@Model.Author?page=@(Model.PageNum - 1)">Previous</a>
             </li>
         }
         @if (Model.ShowNext)
         {
             <li class="">
-                <a href="/@Model.Author?page=@(Model.page + 1)">Next</a>
+                <a href="/@Model.Author?page=@(Model.PageNum + 1)">Next</a>
             </li>
         }
     </ul>
@@ -86,7 +87,7 @@
         <ul class="pagination">
             @for (var i = 1; i <= Model.TotalPages; i++)
             {
-                <li class="page-item @(i == Model.page ? "active" : "")">
+                <li class="page-item @(i == Model.PageNum ? "active" : "")">
                     <a href="/@Model.Author?page=@i">@i</a>
                 </li>
             }
