@@ -30,24 +30,25 @@ numbersections: true
 # Design and Architecture of _Chirp!_
 
 ## Domain model
-The Domain model illustrates the main concepts of the Chirp! project, namely Authors and Cheeps. We've implemented Likes as a core concept as well. The IdentityUser is connected to the Author by matching of username at runtime. When a logged-in user posts, the author name finds, or creates the author based on their username. The identity framework handle authentication, and the Author entity models the concept in the code, and are not formally related besides through username matching.
+The Domain model illustrates the main concepts of the Chirp! project, namely `Author` and `Cheep`. We've implemented Likes as a core concept as well. The IdentityUser is connected to the Author by matching of username at runtime. When a logged-in user posts, the author name finds, or creates the author based on their username. The identity framework handle authentication, and the Author entity models the concept in the code, and are not formally related besides through username matching.
 
 The Author entity contains information about a User, their relationship with Cheeps, as well as followers/followings, and posts they've liked.
 The Cheep entity contains information of who wrote the cheep, as well as who's liked the cheep.
 The Like entity contains information about who've liked which tweet, and when. It's the relationship between an author liking a cheep, and the cheep itself.
 
+![image](./Images/Domain%20model.jpg)
+
 Where the Author and Cheep contains lists of the other entities as they are one to many/many to many relations, the Like entity is a one-to-one relation between a Cheep and an Author.
 
-## Validation and Constraints
+### Validation and Constraints
 - For the Cheep entity, validation is made to ensure a cheep doesn't exceed 160 characters.
 -  When a new cheep is created a validation check to see if a user is logged in is made, as well as to check if the ApplicationUser has an Author created/associated. If not, a new Author is made and linked based on the username of the user.
 -  Validation weather a user is logged in or not, when trying to like a message is also in place.
 
-![image](./Images/Domain%20model.jpg)
-
 ## Architecture — In the small
-![image](./Images/Onion%20Architecture.jpg)
 This diagram shows the architecture of our Chirp! project as orginized after onion architecture, creating seperation of concerns between each part of the project. The four layers depicted are as follows:
+
+![image](./Images/Onion%20Architecture.jpg)
 
 #### 1. Domain Layer (Core)
 This layer contains the core business concepts of the project such as `Author`, `Cheep`, `Like` as wekk as the DTO's and repository interfaces which the next layer can interact with.
@@ -63,7 +64,10 @@ The service layer contains acts as a mediator between the application and reposi
 The last layer contains the webserver, as this is the presentation and entry point. This layer depends on services and repositories via Dependency injection. This is also the layer where we find the test suites for the webserver Razor tests, as well as the End-2-End UI tests using Playwright
 
 ## Architecture of deployed application
-The Chirp! Application is hosted on an Azure webhost. Whenever anyone merges a pullrequest into the main branch on Github, the Github ACTIONS 
+The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on Github, the Github Actions starts a workflow to deploy the code to the azure hosted webservice. The webservice is hosted using the free F1 plan. This is meant for learning and lightweight API's, but are unsuited for use in production due to the limited amount of memory available for use. We've run into a problem of runnning out of CPU available early on in the project, as we kept repopulating the entire database on azure using the DBinitializer class, which led to this only being run when the service is started locally.
+ 
+A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are send and recieved from the azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! projected, leading to persistant data.
+
 ![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
