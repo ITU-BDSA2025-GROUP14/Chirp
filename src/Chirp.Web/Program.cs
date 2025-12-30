@@ -81,7 +81,15 @@ using (var scope = app.Services.CreateScope())
     // ensuring that the db is created + migrated
     try
     {
-        db.Database.Migrate();
+        // skipping migrations for in memory db (used in tests)
+        if (db.Database.IsRelational())
+        {
+            db.Database.Migrate();
+        }
+        else
+        {
+            db.Database.EnsureCreated();
+        }
     }
     catch (SqliteException ex)
     {
@@ -104,6 +112,16 @@ if (seedOnly)
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// security headers
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Content-Security-Policy",
+        "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    await next();
+});
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -112,3 +130,5 @@ app.MapRazorPages();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
