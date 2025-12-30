@@ -2,9 +2,9 @@
 title: _Chirp!_ Project Report
 subtitle: ITU BDSA 2025 Group `14`
 author:
+- "Andreas Faber <afab@itu.dk>"
 - "Christian Dam <cacd@itu.dk>"
 - "Philip Nielsen <pann@itu.dk>"
-- "Andreas Faber <afab@itu.dk>"
 - "Peter Raasthøj <praa@itu.dk>"
 - "Søren Bräuner <brae@itu.dk>"
   
