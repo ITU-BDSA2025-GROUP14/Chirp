@@ -132,4 +132,10 @@ public class UserTimelineModel : PageModel
         FollowingList = await _service.GetFollowing(authorName);
         return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
     }
+
+    public IActionResult OnPostLike(string author, int id)
+    {
+        _service.LikeCheep(id);
+        return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
+    }
 }
