@@ -15,7 +15,6 @@ public class PublicModel : PageModel
 
     public int PageCount { get; set; }
     public int PageSize { get; set; } = 32;
-    public int CheepId { get; set; }
 
     public int TotalPages => (int)Math.Ceiling(decimal.Divide(PageCount, PageSize));
 
@@ -43,8 +42,11 @@ public class PublicModel : PageModel
         resolvedPage = Math.Max(resolvedPage, 1);
         CurrentPage = resolvedPage;
 
+        // setting current user context for per user cheep flags
+        _service.SetCurrentUser(User.Identity?.Name);
+
         PageCount = _service.GetTotalCheepCount();
-        Cheeps = _service.GetCheeps(CurrentPage, PageSize);
+        Cheeps = await _service.GetCheepsAsync(CurrentPage, PageSize);
 
         // Load following list for authenticated users
         if (User.Identity?.IsAuthenticated == true)
@@ -59,16 +61,6 @@ public class PublicModel : PageModel
         return Page();
     }
 
-    public async Task<IActionResult> OnPostLikeAsync(int id)
-    {
-        CurrentPage = GetCurrentPageFromQuery();
-        CheepId = id;
-        _service.LikeCheep(CheepId);
-        
-        return RedirectToPage("/Public", new { page = CurrentPage, pageNumber = CurrentPage });
-
-    }
-
     public async Task<IActionResult> OnPostAsync()
     {
         CurrentPage = GetCurrentPageFromQuery();
@@ -80,9 +72,10 @@ public class PublicModel : PageModel
         if (!ModelState.IsValid)
         {
             // reloadng the page with validation errors
+            _service.SetCurrentUser(User.Identity?.Name);
             PageCount = _service.GetTotalCheepCount();
-            Cheeps = _service.GetCheeps(CurrentPage, PageSize);
-            
+            Cheeps = await _service.GetCheepsAsync(CurrentPage, PageSize);
+
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userName = User.Identity.Name;
@@ -99,8 +92,9 @@ public class PublicModel : PageModel
         if (string.IsNullOrEmpty(authorName))
         {
             ModelState.AddModelError(string.Empty, "You must be logged in to post a cheep");
+            _service.SetCurrentUser(null);
             PageCount = _service.GetTotalCheepCount();
-            Cheeps = _service.GetCheeps(CurrentPage, PageSize);
+            Cheeps = await _service.GetCheepsAsync(CurrentPage, PageSize);
             return Page();
         }
 
