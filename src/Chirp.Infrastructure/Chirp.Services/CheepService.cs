@@ -1,17 +1,23 @@
 using Chirp.Core.DTO;
 using Chirp.Core.Repositories;
 
-using Microsoft.AspNetCore.Components.Sections;
-
 namespace Chirp.Infrastructure.Chirp.Services;
 
 public class CheepService
 {
     private readonly ICheepRepository _repository;
+    private readonly ILikeRepository _likeRepository;
+    private string? _currentUserName;
 
-    public CheepService(ICheepRepository repository)
+    public CheepService(ICheepRepository repository, ILikeRepository likeRepository)
     {
         _repository = repository;
+        _likeRepository = likeRepository;
+    }
+
+    public void SetCurrentUser(string? userName)
+    {
+        _currentUserName = userName;
     }
 
     public List<CheepDto> GetCheeps()
@@ -21,11 +27,10 @@ public class CheepService
             .ToList();
     }
 
-    public List<CheepDto> GetCheeps(int pageNumber, int pageSize)
+    public async Task<List<CheepDto>> GetCheepsAsync(int pageNumber, int pageSize)
     {
-        return _repository.GetCheeps(pageNumber, pageSize)
-            .Select(ToViewModel)
-            .ToList();
+        var cheeps = _repository.GetCheeps(pageNumber, pageSize);
+        return await EnrichWithLikeDataAsync(cheeps);
     }
 
     public int GetTotalCheepCount()
@@ -40,26 +45,23 @@ public class CheepService
             .ToList();
     }
 
-    public List<CheepDto> GetCheepsFromFollowings(List<string> followings,  string author, int pageNumber, int pageSize)
+    public async Task<List<CheepDto>> GetCheepsFromFollowingsAsync(List<string> followings, string author, int pageNumber, int pageSize)
     {
-        return _repository.GetCheepsFromFollowings(followings, author, pageNumber, pageSize)
-            .Select(ToViewModel)
-            .ToList();
+        var cheeps = _repository.GetCheepsFromFollowings(followings, author, pageNumber, pageSize);
+        return await EnrichWithLikeDataAsync(cheeps);
     }
-    
 
-    public List<CheepDto> GetCheepsFromAuthor(string author, int pageNumber, int pageSize)
+    public async Task<List<CheepDto>> GetCheepsFromAuthorAsync(string author, int pageNumber, int pageSize)
     {
-        return _repository.GetCheepsFromAuthor(author, pageNumber, pageSize)
-            .Select(ToViewModel)
-            .ToList();
+        var cheeps = _repository.GetCheepsFromAuthor(author, pageNumber, pageSize);
+        return await EnrichWithLikeDataAsync(cheeps);
     }
 
     public int GetTotalCheepCountByAuthor(string author)
     {
         return _repository.GetTotalCheepCountByAuthor(author);
     }
-    
+
     public int GetTotalCheepCountFromFollowings(List<string> followings, string author)
     {
         return _repository.GetTotalCheepCountFromFollowings(followings, author);
@@ -70,6 +72,59 @@ public class CheepService
         await _repository.CreateCheep(authorName, message);
     }
 
+    public async Task<(bool hasLiked, int likeCount)> ToggleLikeAsync(int cheepId, string authorName)
+    {
+        var hasLiked = await _likeRepository.HasUserLiked(cheepId, authorName);
+
+        if (hasLiked)
+        {
+            await _likeRepository.RemoveLike(cheepId, authorName);
+        }
+        else
+        {
+            await _likeRepository.AddLike(cheepId, authorName);
+        }
+
+        var likeCount = await _likeRepository.GetLikeCount(cheepId);
+        return (!hasLiked, likeCount);
+    }
+
+    private async Task<List<CheepDto>> EnrichWithLikeDataAsync(List<global::Chirp.Core.Cheep> cheeps)
+    {
+        if (cheeps.Count == 0)
+        {
+            return new List<CheepDto>();
+        }
+
+        var cheepIds = cheeps.Select(c => c.CheepId).ToList();
+
+        // batch fetching the like counts for all cheeps
+        var likeCounts = await _likeRepository.GetLikeCounts(cheepIds);
+
+        // and batch fetching user'ss likes if the user is authenticated
+        HashSet<int> userLikedCheepIds = new HashSet<int>();
+        if (!string.IsNullOrEmpty(_currentUserName))
+        {
+            userLikedCheepIds = await _likeRepository.GetLikedCheepIds(_currentUserName, cheepIds);
+        }
+
+        return cheeps.Select(cheep =>
+        {
+            string authorName = cheep.Author?.Name ?? "Unknown";
+            int likeCount = likeCounts.TryGetValue(cheep.CheepId, out var count) ? count : 0;
+            bool hasLiked = userLikedCheepIds.Contains(cheep.CheepId);
+
+            return new CheepDto(
+                cheep.CheepId,
+                authorName,
+                cheep.Text,
+                cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
+                likeCount,
+                hasLiked
+            );
+        }).ToList();
+    }
+
     private static CheepDto ToViewModel(global::Chirp.Core.Cheep cheep)
     {
         string authorName = cheep.Author?.Name ?? "Unknown";
@@ -78,17 +133,9 @@ public class CheepService
             authorName,
             cheep.Text,
             cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-            0,     // LikeCount (this will be populated thruough ILikeRepository)
-            false  // HasLiked (this will also be populated thruough ILikeRepository too)
+            0,     // LikeCount (we use async methods for like data
+            false  // HasLiked (same here... we use async methods for like data)
         );
-    }
-
-    // TODO : remove this method (like functionality moved to ILikeRepository)
-    [Obsolete("Use ILikeRepository.AddLike instead")]
-    public void LikeCheep(int cheepId)
-    {
-        // old -- to be removed when UI is updated :D
-        Console.WriteLine($"LikeCheep called but like system has been refactored to use ILikeRepository yet");
     }
 
     public async Task<List<String>> GetFollowing(string authorName)
@@ -106,5 +153,4 @@ public class CheepService
     {
         return await _repository.AddToFollowing(authorName, targetName);
     }
-    
 }
