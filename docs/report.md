@@ -76,7 +76,7 @@ When an unauthorized user accesses the Chirp application they are met by the pub
 Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can logout anytime from their account. There is also a tab that where it is possible to manage your account details. From here you can download your user data, delete your account, autenticate with Github (if you have not already), and edit account details.
 
 The UML Diagram shows the order in which users can complete these various activities wether they start as an unauthenticated user or not.
-![image]()
+![image](./Images/User%20activities%20diagram.jpg)
 
 ## Sequence of functionality/calls trough _Chirp!_
 Below is a UML sequence diagram visualizing a logged in user, creating a new cheep in the Chirp project. It starts with a HTTP post request, which triggers the OnPostAsync method, going through the `AuthorRepository` checking an author exists in the database, before creating the cheep, using the `CreateCheep` method in the `CheepService` going through the `CheepRepository` to create the new cheep in the database.
