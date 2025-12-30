@@ -19,7 +19,8 @@ public class CheepPostingTests
         var context = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var repository = new CheepRepository(context);
         var authorRepository = new AuthorRepository(context);
-        var service = new CheepService(repository);
+        var likeRepository = new LikeRepository(context);
+        var service = new CheepService(repository, likeRepository);
         return (service, authorRepository, context);
     }
 
@@ -96,7 +97,7 @@ public class CheepPostingTests
         Assert.Equal("/Public", redirectResult?.PageName);
 
         // verifying that the cheep is actually stored in the db
-        var allCheeps = service.GetCheeps(1, 32);
+        var allCheeps = await service.GetCheepsAsync(1, 32);
         Assert.Single(allCheeps);
         Assert.Equal("test -- valid test cheep", allCheeps[0].Message);
         Assert.Equal("TestUser", allCheeps[0].Author);
@@ -180,7 +181,7 @@ public class CheepPostingTests
         Assert.IsType<RedirectToPageResult>(result);
 
         // verifying that the cheep was created with the exactly 160 charrs
-        var allCheeps = service.GetCheeps(1, 32);
+        var allCheeps = await service.GetCheepsAsync(1, 32);
         Assert.Single(allCheeps);
         Assert.Equal(160, allCheeps[0].Message.Length);
     }
@@ -222,7 +223,7 @@ public class CheepPostingTests
         Assert.Equal("/UserTimeline", redirectResult?.PageName);
 
         // verifying that the cheep got created and is appearing in the users timeline
-        var userCheeps = service.GetCheepsFromAuthor("TestUser", 1, 32);
+        var userCheeps = await service.GetCheepsFromAuthorAsync("TestUser", 1, 32);
         Assert.Single(userCheeps);
         Assert.Equal("test -- valid test cheep from usertimeline", userCheeps[0].Message);
     }

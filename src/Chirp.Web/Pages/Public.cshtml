@@ -51,12 +51,12 @@
                             <a href="/@cheep.Author">@cheep.Author</a>
                         </strong>
                         @cheep.Message
-                        <small>&mdash; @cheep.Timestamp, @cheep.Likes  likes</small>
+                        <small>&mdash; @cheep.Timestamp</small>
+                        <button class="like-btn" data-cheep-id="@cheep.CheepId">
+                            <span class="heart">@(cheep.HasLiked ? "♥" : "♡")</span>
+                            <span class="count">@cheep.LikeCount</span>
+                        </button>
                     </p>
-                    <form method="post" asp-page-handler="Like">
-                        <input type="hidden" name="id" value="@cheep.CheepId"/>
-                        <button type="submit">Like</button>
-                    </form>
                 </li>
             }
         </ul>
@@ -96,4 +96,40 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            const heart = btn.querySelector('.heart');
+            if (heart.textContent === '♥') {
+                heart.classList.add('liked');
+            }
+
+            btn.addEventListener('click', async () => {
+                const cheepId = btn.dataset.cheepId;
+                try {
+                    const response = await fetch(`/api/likes/${cheepId}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        }
+                    });
+
+                    if (response.status === 401) {
+                        if (confirm('You need to be logged in to like cheeps. Would you like to log in or register?')) {
+                            window.location.href = '/Identity/Account/Login';
+                        }
+                        return;
+                    }
+
+                    if (response.ok) {
+                        const { hasLiked, likeCount } = await response.json();
+                        heart.textContent = hasLiked ? '♥' : '♡';
+                        heart.classList.toggle('liked', hasLiked);
+                        btn.querySelector('.count').textContent = likeCount;
+                    }
+                } catch (error) {
+                    console.error('Like failed:', error);
+                }
+            });
+        });
+    </script>
 }

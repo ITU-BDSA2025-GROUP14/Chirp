@@ -44,17 +44,21 @@ public class UserTimelineModel : PageModel
     {
         Author = author;
 
-        if (User.Identity.Name == author && User.Identity?.IsAuthenticated == true)
+        // setting the current user context for per user cheep flags
+        _service.SetCurrentUser(User.Identity?.Name);
+
+        if (User.Identity?.Name == author && User.Identity?.IsAuthenticated == true)
         {
-        PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
-        Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, PageNum, PageSize);
+            var followings = await _service.GetFollowing(author);
+            PageCount = _service.GetTotalCheepCountFromFollowings(followings, author);
+            Cheeps = await _service.GetCheepsFromFollowingsAsync(followings, author, PageNum, PageSize);
         }
         else
         {
             PageCount = _service.GetTotalCheepCountByAuthor(author);
-            Cheeps = _service.GetCheepsFromAuthor(author, PageNum, PageSize);
+            Cheeps = await _service.GetCheepsFromAuthorAsync(author, PageNum, PageSize);
         }
-        
+
         if (User.Identity?.IsAuthenticated == true)
         {
             var authorName = User.Identity.Name;
@@ -63,13 +67,16 @@ public class UserTimelineModel : PageModel
                 FollowingList = await _service.GetFollowing(authorName);
             }
         }
-    
+
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync(string author)
     {
         Author = author;
+
+        // Set current user for like data enrichment
+        _service.SetCurrentUser(User.Identity?.Name);
 
         if (!string.IsNullOrEmpty(Text) && Text.Length > 160)
         {
@@ -79,8 +86,9 @@ public class UserTimelineModel : PageModel
         if (!ModelState.IsValid)
         {
             // reloading page with validation errors
-            PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
-            Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, PageNum, PageSize);
+            var followings = await _service.GetFollowing(author);
+            PageCount = _service.GetTotalCheepCountFromFollowings(followings, author);
+            Cheeps = await _service.GetCheepsFromFollowingsAsync(followings, author, PageNum, PageSize);
             FollowingList = await _service.GetFollowing(User.Identity?.Name ?? "");
             return Page();
         }
@@ -90,8 +98,9 @@ public class UserTimelineModel : PageModel
         if (string.IsNullOrEmpty(authorName))
         {
             ModelState.AddModelError(string.Empty, "You must be logged in to post a cheep");
-            PageCount = _service.GetTotalCheepCountFromFollowings(await _service.GetFollowing(author), author);
-            Cheeps = _service.GetCheepsFromFollowings(await _service.GetFollowing(author), author, PageNum, PageSize);
+            var followings = await _service.GetFollowing(author);
+            PageCount = _service.GetTotalCheepCountFromFollowings(followings, author);
+            Cheeps = await _service.GetCheepsFromFollowingsAsync(followings, author, PageNum, PageSize);
             return Page();
         }
 
@@ -101,7 +110,7 @@ public class UserTimelineModel : PageModel
 
         // create the cheep
         await _service.CreateCheep(authorName, Text);
-        
+
         // redirecting to same page so that we prevent resubmission
         return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
     }
@@ -130,12 +139,6 @@ public class UserTimelineModel : PageModel
         }
         await _service.RemoveFollowing(authorName, targetName);
         FollowingList = await _service.GetFollowing(authorName);
-        return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
-    }
-
-    public IActionResult OnPostLike(string author, int id)
-    {
-        _service.LikeCheep(id);
         return RedirectToPage("/UserTimeline", new { author = author, page = PageNum });
     }
 }

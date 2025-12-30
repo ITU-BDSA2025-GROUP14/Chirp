@@ -38,7 +38,8 @@ public class PublicPageTests
 
         var repo = new CheepRepository(_context);
         var authorRepo = new AuthorRepository(_context);
-        _service = new CheepService(repo);
+        var likeRepo = new LikeRepository(_context);
+        _service = new CheepService(repo, likeRepo);
         _pageModel = new PublicModel(_service, authorRepo);
         _pageModel.PageContext = new PageContext
         {
@@ -79,9 +80,10 @@ public class PublicPageTests
         
         var repo = new CheepRepository(ctx);
         var authorRepo = new AuthorRepository(ctx);
-        var svc = new CheepService(repo);
+        var likeRepo = new LikeRepository(ctx);
+        var svc = new CheepService(repo, likeRepo);
         var page = new PublicModel(svc, authorRepo);
-        
+
         page.PageContext = new PageContext
         {
             HttpContext = new DefaultHttpContext
@@ -105,9 +107,10 @@ public class PublicPageTests
         var ctx = TestDbContextFactory.CreateContext(Guid.NewGuid().ToString());
         var repo = new CheepRepository(ctx);
         var authorRepo = new AuthorRepository(ctx);
-        var svc = new CheepService(repo);
+        var likeRepo = new LikeRepository(ctx);
+        var svc = new CheepService(repo, likeRepo);
         var page = new UserTimelineModel(svc, authorRepo);
-        
+
         page.PageContext = new PageContext
         {
             HttpContext = new DefaultHttpContext
@@ -141,9 +144,10 @@ public class PublicPageTests
 
         var repo = new CheepRepository(ctx);
         var authorRepo = new AuthorRepository(ctx);
-        var svc = new CheepService(repo);
+        var likeRepo = new LikeRepository(ctx);
+        var svc = new CheepService(repo, likeRepo);
         var page = new UserTimelineModel(svc, authorRepo) { PageNum = 1 };
-        
+
         page.PageContext = new PageContext
         {
             HttpContext = new DefaultHttpContext
@@ -151,7 +155,7 @@ public class PublicPageTests
                 User = new ClaimsPrincipal(new ClaimsIdentity())
             }
         };
-        
+
         await page.OnGetAsync("Alice");
 
         // Expect most recent CheepId first
