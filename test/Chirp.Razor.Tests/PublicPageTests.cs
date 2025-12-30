@@ -142,7 +142,7 @@ public class PublicPageTests
         var repo = new CheepRepository(ctx);
         var authorRepo = new AuthorRepository(ctx);
         var svc = new CheepService(repo);
-        var page = new UserTimelineModel(svc, authorRepo) { page = 1 };
+        var page = new UserTimelineModel(svc, authorRepo) { PageNum = 1 };
         
         page.PageContext = new PageContext
         {
