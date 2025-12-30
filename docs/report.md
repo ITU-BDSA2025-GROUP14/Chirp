@@ -95,13 +95,35 @@ To run the test suite locally please have .NET 9 and Playwright installed. You n
 - Install Playwright
 - Install .NET
 
-Run the following commands in your terminal in the root of the Chirp project.
+To install .NET see the previous section of the report.
+
+To install PlayWright, navigate to the `Chirp.PlayWrightTests` and install the required browsers using the following commands using powershell.
+```
+cd test\Chirp.PlayWrightTests
+pwsh bin/Debug/net8.0/playwright.ps1 install
+```
+
+
+Then you can navigate back to the root folder `Chirp` and run the following commands in your terminal.
+
+Navigate to root folder
+```
+cd ..\..\
+```
+
+Build the project and tests
 ```
 dotnet build
 ```
 
+Run the Chirp.Razor.Tests tests
 ```
-dotnet test
+dotnet test .\test\Chirp.Razor.Tests
+```
+
+To run the PlayWright tests, the server has to be running, so start the server using the commands as in the previous section from the `Chirp.Web` folder, and then from another terminal window run the command.
+```
+dotnet test .\test\Chirp.PlaywrightTests\
 ```
 
 ## Test suits
