@@ -51,7 +51,7 @@
                             <a href="/@cheep.Author">@cheep.Author</a>
                         </strong>
                         @cheep.Message
-                        <small>&mdash; @cheep.Timestamp, @cheep.Likes  likes</small>
+                        <small>&mdash; @cheep.Timestamp, @cheep.LikeCount likes</small>
                     </p>
                     <form method="post" asp-page-handler="Like">
                         <input type="hidden" name="id" value="@cheep.CheepId"/>

@@ -78,17 +78,17 @@ public class CheepService
             authorName,
             cheep.Text,
             cheep.TimeStamp.ToString("MM/dd/yy H:mm:ss"),
-            cheep.Likes);
+            0,     // LikeCount (this will be populated thruough ILikeRepository)
+            false  // HasLiked (this will also be populated thruough ILikeRepository too)
+        );
     }
-    
+
+    // TODO : remove this method (like functionality moved to ILikeRepository)
+    [Obsolete("Use ILikeRepository.AddLike instead")]
     public void LikeCheep(int cheepId)
     {
-        Console.WriteLine($"Liking cheep {cheepId}");
-        Console.WriteLine("Before: " + _repository.GetCheepLike(cheepId));
-        _repository.UpdateCheepLike(
-            cheepId,
-            _repository.GetCheepLike(cheepId)+1);
-        Console.WriteLine("After: " + _repository.GetCheepLike(cheepId));
+        // old -- to be removed when UI is updated :D
+        Console.WriteLine($"LikeCheep called but like system has been refactored to use ILikeRepository yet");
     }
 
     public async Task<List<String>> GetFollowing(string authorName)
