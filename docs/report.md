@@ -39,11 +39,11 @@ numbersections: true
 # Design and Architecture of _Chirp!_
 
 ## Domain model
-The Domain model illustrates the main concepts of the Chirp! project, namely `Author` and `Cheep`. We've implemented Likes as a core concept as well. The IdentityUser is connected to the Author by matching of username at runtime. When a logged-in user posts, the author name is used to find, or creates the author based on their username. The identity framework handles authentication, and the Author entity models the concept in the code, and are not formally related besides through username matching.
+The Domain model illustrates the main concepts of the Chirp! project, namely `Author` and `Cheep`. We've implemented Likes as a core concept as well. The IdentityUser is connected to the Author by matching of username at runtime. When a logged-in user posts, the `User.Identity.Name` is used to look up (or create) an Author by username. The identity framework handles authentication, while Author models Chirp domain data. They are linked only by username, not a database relation.
 
 The Author entity contains information about a User, their relationship with Cheeps, as well as followers/followings, and posts they've liked.
 The Cheep entity contains information of who wrote the cheep, as well as who has liked the cheep.
-The Like entity contains information about who has liked which tweet, and when. It's the relationship between an author liking a cheep, and the cheep itself.
+The Like entity contains information about who has liked which cheep, and when. It's the relationship between an author liking a cheep, and the cheep itself.
 
 ![image](./Images/Domain%20model.jpg)
 
@@ -73,16 +73,16 @@ The service layer acts as a mediator between the application and repository laye
 The last layer contains the webserver, as this is the presentation and entry point. This layer depends on services and repositories via dependency injection. This is also the layer where we find the test suites for the webserver Razor tests, as well as the End-2-End UI tests using Playwright
 
 ## Architecture of deployed application
-The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on GitHub, the GitHub Actions starts a workflow to deploy the code to the Azure hosted webservice. The webservice is hosted using the free F1 plan. This is meant for learning and lightweight APIs, but are unsuited for use in production due to the limited amount of memory available for use. We've run into a problem of running out of CPU available early on in the project, as we kept repopulating the entire database on Azure using the `DbInitializer` class, which led to this only being run when the service is started locally.
+The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on GitHub, the GitHub Actions starts a workflow to deploy the code to the Azure hosted webservice. The webservice is hosted using the free F1 plan. We've run into a problem of running out of CPU available early on in the project, as we kept repopulating the entire database on Azure using the `DbInitializer` class, which led to this only being run when the service is started locally.
  
-A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are sent and received from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! project, leading to persistent data.
+A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in near real time, on refresh. This is only possible because the project is so small, and only a small amount of requests/responses are sent and received from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! project, leading to persistent data.
 
 ![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
 When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their GitHub. Similarly users can log in with those credentials or with their GitHub account that they have linked.
 
-Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can log out anytime from their account. There is also a tab where it is possible to manage your account details. From here you can download your user data, delete your account, authenticate with Github (if you have not already), and edit account details.
+Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can log out anytime from their account. There is also an account management tab for downloading data, deleting the account, managing external logins, and editing profile details.
 
 The UML Diagram shows the order in which users can complete these various activities whether they start as an unauthenticated user or not.
 ![image](./Images/User%20activities%20diagram.jpg)
