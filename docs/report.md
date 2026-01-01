@@ -67,22 +67,22 @@ There's no EF Core, web application or database code on this layer.
 This layer implements data access contracts from the domain, and this is the layer in which data access as well as data persistence is handled. Repositories for accessing data is required in this layer. The database also fits in this layer, as this is where the direct access to the database is made using the repositories.
 
 #### 3. Service Layer
-The service layer acts as a mediator between the application and repository layers. In this layer the CheepService lives, which has access to `AuthorRepository`, `CheepRepository` and `LikeRepository`, which the webserver uses (through the service layer) to get access to the database. This layer prepares data accessed through the Repository layer, and serves it to the application layer.
+The service layer acts as a mediator between the application and repository layers. In this layer the CheepService lives, which has access to `AuthorRepository`, `CheepRepository` and `LikeRepository`, which the webserver uses (through the service layer) to get access to the database. This layer prepares data accessed through the Repository layer and serves it to the application layer.
 
 #### 4. Application and Test Layer
 The last layer contains the webserver, as this is the presentation and entry point. This layer depends on services and repositories via dependency injection. This is also the layer where we find the test suites for the webserver Razor tests, as well as the End-2-End UI tests using Playwright
 
 ## Architecture of deployed application
-The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on GitHub, the GitHub Actions starts a workflow to deploy the code to the Azure hosted webservice. The webservice is hosted using the free F1 plan. We've run into a problem of running out of CPU available early on in the project, as we kept repopulating the entire database on Azure using the `DbInitializer` class, which led to this only being run when the service is started locally.
+The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on GitHub, the GitHub Actions starts a workflow to deploy the code to the Azure hosted webservice. The webservice is hosted using the free F1 plan. We've run into a problem of running out of CPU available early in the project, as we kept repopulating the entire database on Azure using the `DbInitializer` class, which led to this only being run when the service is started locally.
  
-A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in near real time, on refresh. This is only possible because the project is so small, and only a small amount of requests/responses are sent and received from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! project, leading to persistent data.
+A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in near real time, on refresh. This is only possible because the project is so small, and only a small number of requests/responses are sent and received from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice and is accessible for read/write using the Chirp! project, leading to persistent data.
 
 ![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
-When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their GitHub. Similarly users can log in with those credentials or with their GitHub account that they have linked.
+When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their GitHub. Similarly, users can log in with those credentials or with their GitHub account that they have linked.
 
-Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can log out anytime from their account. There is also an account management tab for downloading data, deleting the account, managing external logins, and editing profile details.
+Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other `Authors` whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can log out anytime from their account. There is also an account management tab for downloading data, deleting the account, managing external logins, and editing profile details.
 
 The UML Diagram shows the order in which users can complete these various activities whether they start as an unauthenticated user or not.
 ![image](./Images/User%20activities%20diagram.jpg)
@@ -138,7 +138,7 @@ The workflow:
 2. Setup .NET 8: installs the .NET 8 SDK
 3. Restore Dependencies: downloads all NuGet packages
 4. Build: compiles the solution
-5. Test: runs all of the tests to make sure the release is stable
+5. Test: runs all the tests to make sure the release is stable
 6. Publish: creates executables for Windows (win-x64), macOS (osx-x64), and Linux (linux-x64)
 7. Create ZIP Archives: packages each platform's output
 8. Create GitHub Release: publishes the release with all three ZIP files as downloadable artifacts.
@@ -148,7 +148,7 @@ The workflow:
 ![image](./Images/project-board.png)
 We've gotten around about every required task as specified in the day-to-day project description in GitHub. A final End-2-End test using Playwright to get around the entire project in a single test has not been made, and is therefore in progress still, though smaller UI tests using Playwright has been created, and are all fully functional.
 
-Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub, and transformed each requirement into a GitHub issue.
+Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub and transformed each requirement into a GitHub issue.
 
 We as a group went through each requirement individually and created success criteria for the requirement, as well as a user story and a small description to make sure each requirement would be implemented satisfactorily.
 
@@ -164,7 +164,7 @@ We have done our best to follow this flow, though there's been times where a bra
  
 
 ## How to make _Chirp!_ work locally
-To clone the project you need to have Git installed on your local machine
+To clone the project, you need to have Git installed on your local machine
 - [Install Git](https://git-scm.com/install/)
 
 When Git is installed, run the following command in your terminal, or the Git CLI
@@ -198,7 +198,7 @@ To run the test suite locally please have .NET 8 and Playwright installed. You n
 - Install Playwright
 - Install .NET
 
-To install .NET see the last section of the report.
+To install .NET, see the last section of the report.
 
 To install Playwright, navigate to the `Chirp.PlaywrightTests` folder and install the required browsers using the following commands using powershell.
 ```
@@ -224,7 +224,7 @@ Run the Chirp.Razor.Tests tests
 dotnet test .\test\Chirp.Razor.Tests
 ```
 
-To run the PlayWright tests, the server has to be running, so start the server using the commands as in the previous section from the `Chirp.Web` folder, and then from another terminal window run the command.
+To run the PlayWright tests, the server must be running, so start the server using the commands as in the previous section from the `Chirp.Web` folder, and then from another terminal window run the command.
 ```
 dotnet test .\test\Chirp.PlaywrightTests\
 ```
@@ -232,7 +232,7 @@ dotnet test .\test\Chirp.PlaywrightTests\
 ## Test suites
 To prevent bugs and ensure requirements from issues are fulfilled, we have several test suites in our repository. namely we have Unit tests, Integration tests, and End-to-End tests and UI tests.
 
-The structure of the tests are as follows
+The structure of the tests is as follows
 ```
 Project root
 |-- test
@@ -268,16 +268,16 @@ The folder contains the following tests
 - PublicPageTests.cs
 - TimelineIntegrationTests.cs
 
-The CustomWebApplicationFactory and TestDBContextFactory provide the foundational setup for our different Razor Tests, configuring the test server and database context to simulate realistic application behavior, without using our main system. 
+The CustomWebApplicationFactory and TestDBContextFactory provide the foundational setup for our different Razor Tests, configuring the test server and database context to simulate realistic application behaviour, without using our main system. 
 CsrfProtectionTest and SqlIntjectionTests focus on securing the applications strength to defend against common web vulnerabilities, while SecurityRegressionTests ensure that previously fixed issues remain solved.
 
 Functionality-specific tests like CheepPostingTests, CheepRepositoryTests, PublicPageTests, PaginationUnitTest and LikeRepositoryTests help verifying core features in our program. 
 
 # Ethics
 ## License
-We've chosen to use an MIT License as it gives us the most freedom for our project. It grants us the rights to modify and distribute our project as we see fit, and allows other to use our code in their own projects, as long as Attribution i.e the original copyright notice and license text is included in the software.
+We've chosen to use an MIT License as it gives us the most freedom for our project. It grants us the rights to modify and distribute our project as we see fit and allows other to use our code in their own projects, if Attribution i.e. the original copyright notice and license text is included in the software.
 
 ## LLMs, ChatGPT, CoPilot, and others
-[ChatGPT ](https://chatgpt.com/) has been used during development. We've very early on set limitations on using LLM's and ChatGPT, as we've wanted to develop this project using our own intuition, and learn the proper tools for developing, as well as getting a feel for using C# as whole. We've been urged to make use of LLM's during development throughout the project though, and has since about halfway through the project, made use of mainly ChatGPT to create and help create tests for the different parts of the system. ChatGPT has also been used as a resource to bounce ideas off of and has been coauthored in every commit, where it's been used.
+[ChatGPT ](https://chatgpt.com/) has been used during development. We've very early on set limitations on using LLM's and ChatGPT, as we've wanted to develop this project using our own intuition, and learn the proper tools for developing, as well as getting a feel for using C# as whole. We've been urged to make use of LLM's during development throughout the project though, and has since about halfway through the project, made use of mainly ChatGPT to create and help create tests for the different parts of the system. ChatGPT has also been used as a resource to bounce ideas off and has been coauthored in every commit, where it's been used.
 
-The use of LLMs significantly sped up development, as it has been quick to make a useful test suite, especially when given context, and guiding text as to how to create the tests. It's also helped when stuck on essential implementation or understanding issues in regards to using the Entity framework as well as when implementing 3rd party logins.
+The use of LLMs significantly sped up development, as it has been quick to make a useful test suite, especially when given context, and guiding text as to how to create the tests. It's also helped when stuck on essential implementation or understanding issues in regard to using the Entity framework as well as when implementing 3rd party logins.
