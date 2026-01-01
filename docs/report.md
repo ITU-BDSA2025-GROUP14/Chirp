@@ -20,7 +20,7 @@ numbersections: true
       - [4. Application and Test Layer](#4-application-and-test-layer)
   - [Architecture of deployed application](#architecture-of-deployed-application)
   - [User activities](#user-activities)
-  - [Sequence of functionality/calls trough _Chirp!_](#sequence-of-functionalitycalls-trough-chirp)
+  - [Sequence of functionality/calls through _Chirp!_](#sequence-of-functionalitycalls-through-chirp)
 - [Process](#process)
   - [Build, test, release, and deployment](#build-test-release-and-deployment)
     - [Continuous Integration (Build \& Test)](#continuous-integration-build--test)
@@ -39,55 +39,55 @@ numbersections: true
 # Design and Architecture of _Chirp!_
 
 ## Domain model
-The Domain model illustrates the main concepts of the Chirp! project, namely `Author` and `Cheep`. We've implemented Likes as a core concept as well. The IdentityUser is connected to the Author by matching of username at runtime. When a logged-in user posts, the author name finds, or creates the author based on their username. The identity framework handle authentication, and the Author entity models the concept in the code, and are not formally related besides through username matching.
+The Domain model illustrates the main concepts of the Chirp! project, namely `Author` and `Cheep`. We've implemented Likes as a core concept as well. The IdentityUser is connected to the Author by matching of username at runtime. When a logged-in user posts, the author name is used to find, or creates the author based on their username. The identity framework handles authentication, and the Author entity models the concept in the code, and are not formally related besides through username matching.
 
 The Author entity contains information about a User, their relationship with Cheeps, as well as followers/followings, and posts they've liked.
-The Cheep entity contains information of who wrote the cheep, as well as who's liked the cheep.
-The Like entity contains information about who've liked which tweet, and when. It's the relationship between an author liking a cheep, and the cheep itself.
+The Cheep entity contains information of who wrote the cheep, as well as who has liked the cheep.
+The Like entity contains information about who has liked which tweet, and when. It's the relationship between an author liking a cheep, and the cheep itself.
 
 ![image](./Images/Domain%20model.jpg)
 
-Where the Author and Cheep contains lists of the other entities as they are one to many/many to many relations, the Like entity is a one-to-one relation between a Cheep and an Author.
+Where the Author and Cheep contain lists of the other entities as they are one-to-many/many-to-many relations, the Like entity is a one-to-one relation between a Cheep and an Author.
 
 ### Validation and Constraints
 - For the Cheep entity, validation is made to ensure a cheep doesn't exceed 160 characters.
 -  When a new cheep is created a validation check to see if a user is logged in is made, as well as to check if the ApplicationUser has an Author created/associated. If not, a new Author is made and linked based on the username of the user.
--  Validation weather a user is logged in or not, when trying to like a message is also in place.
+-  Validation whether a user is logged in or not, when trying to like a message is also in place.
 
 ## Architecture — In the small
-This diagram shows the architecture of our Chirp! project as orginized after onion architecture, creating seperation of concerns between each part of the project. The four layers depicted are as follows:
+This diagram shows the architecture of our Chirp! project as organized after onion architecture, creating separation of concerns between each part of the project. The four layers depicted are as follows:
 
 ![image](./Images/Onion%20Architecture.jpg)
 
 #### 1. Domain Layer (Core)
-This layer contains the core business concepts of the project such as `Author`, `Cheep`, `Like` as well as the DTO's and repository interfaces which the next layer can interact with.
+This layer contains the core business concepts of the project such as `Author`, `Cheep`, `Like` as well as the DTOs and repository interfaces which the next layer can interact with.
 There's no EF Core, web application or database code on this layer.
 
 #### 2. Repository Layer
 This layer implements data access contracts from the domain, and this is the layer in which data access as well as data persistance is handled. Repositories for accessing data is required in this layer. The database also fits in this layer, as this is where the direct access to the database is made using the repositories.
 
 #### 3. Service Layer
-The service layer contains acts as a mediator between the application and repository layers. In this layer the CheepService lives, which has access to `AuthorRepository`, `CheepRepository` and `LikeRepository`, which the webserver uses (through the service layer) to get access to the database. This layer prepares data accessed through the Repository layer, and serves it to the application layer.
+The service layer acts as a mediator between the application and repository layers. In this layer the CheepService lives, which has access to `AuthorRepository`, `CheepRepository` and `LikeRepository`, which the webserver uses (through the service layer) to get access to the database. This layer prepares data accessed through the Repository layer, and serves it to the application layer.
 
 #### 4. Application and Test Layer
-The last layer contains the webserver, as this is the presentation and entry point. This layer depends on services and repositories via Dependency injection. This is also the layer where we find the test suites for the webserver Razor tests, as well as the End-2-End UI tests using Playwright
+The last layer contains the webserver, as this is the presentation and entry point. This layer depends on services and repositories via dependency injection. This is also the layer where we find the test suites for the webserver Razor tests, as well as the End-2-End UI tests using Playwright
 
 ## Architecture of deployed application
-The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on Github, the Github Actions starts a workflow to deploy the code to the azure hosted webservice. The webservice is hosted using the free F1 plan. This is meant for learning and lightweight API's, but are unsuited for use in production due to the limited amount of memory available for use. We've run into a problem of runnning out of CPU available early on in the project, as we kept repopulating the entire database on azure using the DBinitializer class, which led to this only being run when the service is started locally.
+The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on GitHub, the GitHub Actions starts a workflow to deploy the code to the Azure hosted webservice. The webservice is hosted using the free F1 plan. This is meant for learning and lightweight APIs, but are unsuited for use in production due to the limited amount of memory available for use. We've run into a problem of running out of CPU available early on in the project, as we kept repopulating the entire database on Azure using the `DbInitializer` class, which led to this only being run when the service is started locally.
  
-A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are send and recieved from the azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! projected, leading to persistant data.
+A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are send and recieved from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! projected, leading to persistant data.
 
 ![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
-When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their Github. Similarly users can log in with those credentials or with their Github account that they have linked.
+When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their GitHub. Similarly users can log in with those credentials or with their GitHub account that they have linked.
 
 Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can logout anytime from their account. There is also a tab that where it is possible to manage your account details. From here you can download your user data, delete your account, autenticate with Github (if you have not already), and edit account details.
 
-The UML Diagram shows the order in which users can complete these various activities wether they start as an unauthenticated user or not.
+The UML Diagram shows the order in which users can complete these various activities whether they start as an unauthenticated user or not.
 ![image](./Images/User%20activities%20diagram.jpg)
 
-## Sequence of functionality/calls trough _Chirp!_
+## Sequence of functionality/calls through _Chirp!_
 Below is a UML sequence diagram visualizing a logged in user, creating a new cheep in the Chirp project. It starts with a HTTP post request, which triggers the OnPostAsync method, going through the `AuthorRepository` checking an author exists in the database, before creating the cheep, using the `CreateCheep` method in the `CheepService` going through the `CheepRepository` to create the new cheep in the database.
 
 When the Cheep has been created the user will be redirected to the start page through a HTTP GET request, once again going through the `CheepService` and `CheepRepository` to get all cheeps posted and their authors from the database, and finally displaying all cheeps, as well as the newly created cheep, to the user, sending a 200 OK request to the browser from the webserver.
@@ -146,7 +146,7 @@ The workflow:
 
 ## Teamwork
 ![image](./Images/project-board.png)
-We've gotten around about every required task as specified in the day-to-day project description in Github. A final End-2-End test using playwright to get around the entire project in a single test has not been made, and is therefore in progress still, though smaller UI tests using Playwright has been created, and are all fully functional.
+We've gotten around about every required task as specified in the day-to-day project description in GitHub. A final End-2-End test using playwright to get around the entire project in a single test has not been made, and is therefore in progress still, though smaller UI tests using Playwright has been created, and are all fully functional.
 
 Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub, and transformed each requirement into a GitHub issue.
 
