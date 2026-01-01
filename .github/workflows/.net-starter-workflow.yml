@@ -22,8 +22,15 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore dependencies
         run: dotnet restore
-    
+
       - name: Build
         run: dotnet build --no-restore
-      - name: Test (Razor only)
+
+      - name: Test (Unit/Integration)
         run: dotnet test test/Chirp.Razor.Tests/Chirp.Razor.Tests.csproj --no-build --verbosity normal
+
+      - name: Install Playwright Browsers
+        run: pwsh test/Chirp.PlaywrightTests/bin/Debug/net8.0/playwright.ps1 install --with-deps
+
+      - name: Test (Playwright E2E)
+        run: dotnet test test/Chirp.PlaywrightTests/Chirp.PlaywrightTests.csproj --no-build --verbosity normal
