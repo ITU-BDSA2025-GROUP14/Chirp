@@ -12,13 +12,21 @@ numbersections: true
 
 - [Design and Architecture of _Chirp!_](#design-and-architecture-of-chirp)
   - [Domain model](#domain-model)
+    - [Validation and Constraints](#validation-and-constraints)
   - [Architecture — In the small](#architecture--in-the-small)
+      - [1. Domain Layer (Core)](#1-domain-layer-core)
+      - [2. Repository Layer](#2-repository-layer)
+      - [3. Service Layer](#3-service-layer)
+      - [4. Application and Test Layer](#4-application-and-test-layer)
   - [Architecture of deployed application](#architecture-of-deployed-application)
   - [User activities](#user-activities)
   - [Sequence of functionality/calls trough _Chirp!_](#sequence-of-functionalitycalls-trough-chirp)
 - [Process](#process)
   - [Build, test, release, and deployment](#build-test-release-and-deployment)
-  - [Teamwork](#team-work)
+    - [Continuous Integration (Build \& Test)](#continuous-integration-build--test)
+    - [Continuous Deployment (Azure)](#continuous-deployment-azure)
+    - [Release Management (GitHub Releases + Versioning)](#release-management-github-releases--versioning)
+  - [Teamwork](#teamwork)
   - [How to make _Chirp!_ work locally](#how-to-make-chirp-work-locally)
   - [How to run test suite locally](#how-to-run-test-suite-locally)
   - [Test suits](#test-suits)
@@ -27,6 +35,7 @@ numbersections: true
 - [Ethics](#ethics)
   - [License](#license)
   - [LLMs, ChatGPT, CoPilot, and others](#llms-chatgpt-copilot-and-others)
+
 # Design and Architecture of _Chirp!_
 
 ## Domain model
@@ -51,7 +60,7 @@ This diagram shows the architecture of our Chirp! project as orginized after oni
 ![image](./Images/Onion%20Architecture.jpg)
 
 #### 1. Domain Layer (Core)
-This layer contains the core business concepts of the project such as `Author`, `Cheep`, `Like` as wekk as the DTO's and repository interfaces which the next layer can interact with.
+This layer contains the core business concepts of the project such as `Author`, `Cheep`, `Like` as well as the DTO's and repository interfaces which the next layer can interact with.
 There's no EF Core, web application or database code on this layer.
 
 #### 2. Repository Layer
