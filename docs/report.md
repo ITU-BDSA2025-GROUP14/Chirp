@@ -200,7 +200,7 @@ To run the test suite locally please have .NET 8 and Playwright installed. You n
 
 To install .NET see the last section of the report.
 
-To install Playwright, navigate to the `Chirp.Playwright` and install the required browsers using the following commands using powershell.
+To install Playwright, navigate to the `Chirp.PlaywrightTests` folder and install the required browsers using the following commands using powershell.
 ```
 cd test\Chirp.PlayWrightTests
 pwsh bin/Debug/net8.0/playwright.ps1 install
