@@ -29,7 +29,7 @@ numbersections: true
   - [Teamwork](#teamwork)
   - [How to make _Chirp!_ work locally](#how-to-make-chirp-work-locally)
   - [How to run test suite locally](#how-to-run-test-suite-locally)
-  - [Test suits](#test-suits)
+  - [Test suites](#test-suites)
     - [Chirp.PlaywrightTests](#chirpplaywrighttests)
     - [Chirp.Razor.Tests](#chirprazortests)
 - [Ethics](#ethics)
@@ -75,22 +75,22 @@ The last layer contains the webserver, as this is the presentation and entry poi
 ## Architecture of deployed application
 The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on GitHub, the GitHub Actions starts a workflow to deploy the code to the Azure hosted webservice. The webservice is hosted using the free F1 plan. This is meant for learning and lightweight APIs, but are unsuited for use in production due to the limited amount of memory available for use. We've run into a problem of running out of CPU available early on in the project, as we kept repopulating the entire database on Azure using the `DbInitializer` class, which led to this only being run when the service is started locally.
  
-A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are send and recieved from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! projected, leading to persistant data.
+A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are sent and recieved from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! project, leading to persistent data.
 
 ![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
 When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their GitHub. Similarly users can log in with those credentials or with their GitHub account that they have linked.
 
-Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can logout anytime from their account. There is also a tab that where it is possible to manage your account details. From here you can download your user data, delete your account, autenticate with Github (if you have not already), and edit account details.
+Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can log out anytime from their account. There is also a tab where it is possible to manage your account details. From here you can download your user data, delete your account, autenticate with Github (if you have not already), and edit account details.
 
 The UML Diagram shows the order in which users can complete these various activities whether they start as an unauthenticated user or not.
 ![image](./Images/User%20activities%20diagram.jpg)
 
 ## Sequence of functionality/calls through _Chirp!_
-Below is a UML sequence diagram visualizing a logged in user, creating a new cheep in the Chirp project. It starts with a HTTP post request, which triggers the OnPostAsync method, going through the `AuthorRepository` checking an author exists in the database, before creating the cheep, using the `CreateCheep` method in the `CheepService` going through the `CheepRepository` to create the new cheep in the database.
+Below is a UML sequence diagram visualizing a logged in user, creating a new cheep in the Chirp project. It starts with an HTTP post request, which triggers the OnPostAsync method, going through the `AuthorRepository` checking an author exists in the database, before creating the cheep, using the `CreateCheep` method in the `CheepService` going through the `CheepRepository` to create the new cheep in the database.
 
-When the Cheep has been created the user will be redirected to the start page through a HTTP GET request, once again going through the `CheepService` and `CheepRepository` to get all cheeps posted and their authors from the database, and finally displaying all cheeps, as well as the newly created cheep, to the user, sending a 200 OK request to the browser from the webserver.
+When the Cheep have been created the user will be redirected to the start page through an HTTP GET request, once again going through the `CheepService` and `CheepRepository` to get all cheeps posted and their authors from the database, and finally displaying all cheeps, as well as the newly created cheep, to the user, sending a 200 OK request to the browser from the webserver.
 ![image](./Images/Sequence%20of%20functionality.jpg)
 
 
@@ -111,7 +111,7 @@ The workflow executes these following steps:
 4. Build: compiles the solution
 5. Test: runs the Chirp.Razor.Tests test suite (unit and integration tests)
 
-Only the Razor tests are executed in CI, since the Playwright E2E tests requires the server to be running and browser infrastructure, which is not configured in this workflow.
+Only the Razor tests are executed in CI, since the Playwright End-2-End tests require the server to be running and browser infrastructure, which is not configured in this workflow.
 
 ### Continuous Deployment (Azure)
 The deployment workflow is triggered automatically on every push to the main branch, and can also be triggered manually via workflow_dispatch. It consists of two jobs: build and deploy.
@@ -119,8 +119,8 @@ The deployment workflow is triggered automatically on every push to the main bra
 The Build job:
 1. Checkout: clones the repository
 2. Setup .NET 8: installs the .NET 8 SDK
-3. Build Release: compiles Chirp.Web in Release configuration
-4. Publish: creates deployment ready output
+3. Build Release: compiles Chirp.web in Release configuration
+4. Publish: creates deployment-ready output
 5. Upload Artifact: stores the published output for the deploy job
 
 The Deploy job (runs after build completes):
@@ -146,13 +146,13 @@ The workflow:
 
 ## Teamwork
 ![image](./Images/project-board.png)
-We've gotten around about every required task as specified in the day-to-day project description in GitHub. A final End-2-End test using playwright to get around the entire project in a single test has not been made, and is therefore in progress still, though smaller UI tests using Playwright has been created, and are all fully functional.
+We've gotten around about every required task as specified in the day-to-day project description in GitHub. A final End-2-End test using Playwright to get around the entire project in a single test has not been made, and is therefore in progress still, though smaller UI tests using Playwright has been created, and are all fully functional.
 
 Every week we've read through all the requirements posed in the project work part of the lecture notes GitHub, and transformed each requirement into a GitHub issue.
 
 We as a group went through each requirement individually and created success criteria for the requirement, as well as a user story and a small description to make sure each requirement would be implemented satisfactorily.
 
-At the beginning we had neither a description or a user story, as we misinterpreted the way to create issues, but we've afterwards edited all issues to contain both things, and it made development a lot easier. Each issue was then issued to a single person, who would then work on the issue from start to completion. As the issue is assigned, we've moved it into "In development" in our project board.
+At the beginning we had neither a description or a user story, as we misinterpreted the way to create issues, but we've afterwards edited all issues to contain both things, and it made development a lot easier. Each issue was then assigned to a single person, who would then work on the issue from start to completion. As the issue is assigned, we've moved it into "In development" in our project board.
 
 We made use of pair programming, making sure a lot of the slightly meatier issues, had two developers looking at it at once, and making sure knowledge was spread out throughout the group. We've tried to adhere to trunk-based development, branching out, and merging into the ‘main’ stream at the start and end of a day, but larger issues have been allowed to live for longer.
  
@@ -173,7 +173,7 @@ git clone https://github.com/ITU-BDSA2025-GROUP14/Chirp.git
 ```
 
 To run the Chirp project you need to have .NET 8 installed
-- [Install .NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [Install .NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 After you have cloned the repository down to your local machine, navigate to the Chirp.Web folder of the project using following command
 ```
@@ -194,13 +194,13 @@ dotnet run
 The project will be running locally on http://localhost:5273. Navigating to this address should take you to the front page of the Chirp! application where you're able to see all posted cheeps, and you can login, to begin posting your own cheeps locally!
 
 ## How to run test suite locally
-To run the test suite locally please have .NET 9 and Playwright installed. You need to use the terminal to run the commands needed for running the tests.
+To run the test suite locally please have .NET 8 and Playwright installed. You need to use the terminal to run the commands needed for running the tests.
 - Install Playwright
 - Install .NET
 
 To install .NET see the last section of the report.
 
-To install PlayWright, navigate to the `Chirp.PlayWrightTests` and install the required browsers using the following commands using powershell.
+To install Playwright, navigate to the `Chirp.Playwright` and install the required browsers using the following commands using powershell.
 ```
 cd test\Chirp.PlayWrightTests
 pwsh bin/Debug/net8.0/playwright.ps1 install
@@ -229,7 +229,7 @@ To run the PlayWright tests, the server has to be running, so start the server u
 dotnet test .\test\Chirp.PlaywrightTests\
 ```
 
-## Test suits
+## Test suites
 To prevent bugs and ensure requirements from issues are fulfilled, we have several test suites in our repository. namely we have Unit tests, Integration tests, and End-to-End tests and UI tests.
 
 The structure of the tests are as follows
@@ -243,38 +243,41 @@ Project root
 The Chirp.PlaywrightTests folder contains UI and end-to-end tests, the Chirp.Razor.Tests folder contains the remaining tests.
 
 ### Chirp.PlaywrightTests
+The Playwright testsuite is created to ensure the UI is tested, and that End-2-End tests are done automatically to ensure the entire system functions, after changes to the system.
+
 This folder contains the following tests
 - PlayWrightTestBase
 - PostCheepFlowTests
 - RegisterTest
 
-The `PlayWrightTestBase` contains the base setup for the UI tests, settiung up a browser, giving it context, and settiung up playwright, whereas `PostCheepFlowTests` and `RegisterTest` each tests different UI functionality, with either logging in, and posting a cheep, or registering a new user. Many more UI tests could be made, but because of the time restrictions we've chosen these to make up the most important functionality to be tested in our project.
+The `PlayWrightTestBase` contains the base setup for the UI tests, setting up a browser, giving it context, and setting up Playwright, whereas `PostCheepFlowTests` and `RegisterTest` each tests different UI functionality, with either logging in, and posting a cheep, or registering a new user. Many more UI tests could be made, but because of the time restrictions we've chosen these to make up the most important functionality to be tested in our project.
 
 ### Chirp.Razor.Tests
-This folder contains the following tests
-•	CustomWebApplicationFactory.cs
-•	CsrfProtectionTests.cs
-•	SecurityReggressionTests.cs
-•	SqlInjectionTests.cs
-•	TextDBContextFactory.cs
-•	CheepPostingTests.cs
-•	CheepRepositoryTests.cs
-•	LikeRepositoryTests.cs
-•	PaginationUnitTests.cs
-•	PublicPageTests.cs
-•	TimelineIntegrationTests.cs
+The Chirp.Razor.Tests suite contains tests for the backend functionality of the Razor pages which is used in the project.
+
+The folder contains the following tests
+- CustomWebApplicationFactory.cs
+- CsrfProtectionTests.cs
+- SecurityReggressionTests.cs
+- SqlInjectionTests.cs
+- TextDBContextFactory.cs
+- CheepPostingTests.cs
+- CheepRepositoryTests.cs
+- LikeRepositoryTests.cs
+- PaginationUnitTests.cs
+- PublicPageTests.cs
+- TimelineIntegrationTests.cs
 
 The CustomWebApplicationFactory and TestDBContextFactory provide the foundational setup for our different Razor Tests, configuring the test server and database context to simulate realistic application behavior, without using our main system. 
 CsrfProtectionTest and SqlIntjectionTests focus on securing the applications strength to defend against common web vulnerabilities, while SecurityRegressionTests ensure that previously fixed issues remain solved.
 
 Functionality-specific tests like CheepPostingTests, CheepRepositoryTests, PublicPageTests, PaginationUnitTest and LikeRepositoryTests help verifying core features in our program. 
 
-
 # Ethics
 ## License
-We've chosen to use an MIT License as it gives us the most freedom for our project. It grants us the rights to modify and distribute our project as we see fit, and allows other to use our code in their own projects, as long as Attribution I.E the original copyright notice and license text is included in the software.
+We've chosen to use an MIT License as it gives us the most freedom for our project. It grants us the rights to modify and distribute our project as we see fit, and allows other to use our code in their own projects, as long as Attribution i.e the original copyright notice and license text is included in the software.
 
 ## LLMs, ChatGPT, CoPilot, and others
-[ChatGPT ](https://chatgpt.com/) has been used during development. We've very early on set limitations on using LLM's and ChatGPT, as we've wanted to develop this project using out own intuition, and learn the proper tools for developing, as well as getting a feel for using C# as whole. We've been urged to make use of LLM's during development throughout the project though, and has since about halfway through the project, made use of mainly ChatGPT to create and help create tests for the different parts of the system. ChatGPT has also been used as a resource to bounce idea's off of and has been coauthered in every commit, where it's been used.
+[ChatGPT ](https://chatgpt.com/) has been used during development. We've very early on set limitations on using LLM's and ChatGPT, as we've wanted to develop this project using our own intuition, and learn the proper tools for developing, as well as getting a feel for using C# as whole. We've been urged to make use of LLM's during development throughout the project though, and has since about halfway through the project, made use of mainly ChatGPT to create and help create tests for the different parts of the system. ChatGPT has also been used as a resource to bounce ideas off of and has been coauthored in every commit, where it's been used.
 
-The use of LLMs significantly sped up development, as it has been quick to make a usefull testsuite, especially when given context, and guiding text as to how to create the tests. It's also helped when stuck on essential implementation or understanding issues in regards to using the Entity framework as well as when implementing 3rd party logins.
+The use of LLMs significantly sped up development, as it has been quick to make a useful test suite, especially when given context, and guiding text as to how to create the tests. It's also helped when stuck on essential implementation or understanding issues in regards to using the Entity framework as well as when implementing 3rd party logins.
