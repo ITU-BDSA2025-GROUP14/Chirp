@@ -1,0 +1,45 @@
+@page
+@model EmailModel
+@{
+    ViewData["Title"] = "Manage Email";
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="form-floating mb-3">
+    <input asp-for="Email" class="form-control" disabled />
+    <label asp-for="Email" class="form-label">Current Email</label>
+</div>
+
+@if (Model.IsEmailConfirmed)
+{
+    <div class="alert alert-success mb-3" role="status">
+        Your email is confirmed.
+    </div>
+}
+else
+{
+    <form id="send-verification-form" method="post" asp-page-handler="SendVerificationEmail" class="mb-3">
+        <div class="alert alert-info" role="status" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span>Your email is not yet confirmed.</span>
+            <button type="submit" class="btn btn-secondary">Send Verification Email</button>
+        </div>
+    </form>
+}
+
+<form id="change-email-form" method="post" asp-page-handler="ChangeEmail">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    <div class="form-floating mb-3">
+        <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" placeholder="Please enter your new email" />
+        <label asp-for="Input.NewEmail" class="form-label">New Email</label>
+        <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
+    </div>
+
+    <button id="change-email-button" type="submit" class="btn btn-lg btn-primary">Change Email</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
