@@ -251,6 +251,24 @@ This folder contains the following tests
 The `PlayWrightTestBase` contains the base setup for the UI tests, settiung up a browser, giving it context, and settiung up playwright, whereas `PostCheepFlowTests` and `RegisterTest` each tests different UI functionality, with either logging in, and posting a cheep, or registering a new user. Many more UI tests could be made, but because of the time restrictions we've chosen these to make up the most important functionality to be tested in our project.
 
 ### Chirp.Razor.Tests
+This folder contains the following tests
+•	CustomWebApplicationFactory.cs
+•	CsrfProtectionTests.cs
+•	SecurityReggressionTests.cs
+•	SqlInjectionTests.cs
+•	TextDBContextFactory.cs
+•	CheepPostingTests.cs
+•	CheepRepositoryTests.cs
+•	LikeRepositoryTests.cs
+•	PaginationUnitTests.cs
+•	PublicPageTests.cs
+•	TimelineIntegrationTests.cs
+
+The CustomWebApplicationFactory and TestDBContextFactory provide the foundational setup for our different Razor Tests, configuring the test server and database context to simulate realistic application behavior, without using our main system. 
+CsrfProtectionTest and SqlIntjectionTests focus on securing the applications strength to defend against common web vulnerabilities, while SecurityRegressionTests ensure that previously fixed issues remain solved.
+
+Functionality-specific tests like CheepPostingTests, CheepRepositoryTests, PublicPageTests, PaginationUnitTest and LikeRepositoryTests help verifying core features in our program. 
+
 
 # Ethics
 ## License
