@@ -64,7 +64,7 @@ This layer contains the core business concepts of the project such as `Author`, 
 There's no EF Core, web application or database code on this layer.
 
 #### 2. Repository Layer
-This layer implements data access contracts from the domain, and this is the layer in which data access as well as data persistance is handled. Repositories for accessing data is required in this layer. The database also fits in this layer, as this is where the direct access to the database is made using the repositories.
+This layer implements data access contracts from the domain, and this is the layer in which data access as well as data persistence is handled. Repositories for accessing data is required in this layer. The database also fits in this layer, as this is where the direct access to the database is made using the repositories.
 
 #### 3. Service Layer
 The service layer acts as a mediator between the application and repository layers. In this layer the CheepService lives, which has access to `AuthorRepository`, `CheepRepository` and `LikeRepository`, which the webserver uses (through the service layer) to get access to the database. This layer prepares data accessed through the Repository layer, and serves it to the application layer.
@@ -75,14 +75,14 @@ The last layer contains the webserver, as this is the presentation and entry poi
 ## Architecture of deployed application
 The Chirp! Application is hosted on an Azure webhost. When code is pushed to the main branch on GitHub, the GitHub Actions starts a workflow to deploy the code to the Azure hosted webservice. The webservice is hosted using the free F1 plan. This is meant for learning and lightweight APIs, but are unsuited for use in production due to the limited amount of memory available for use. We've run into a problem of running out of CPU available early on in the project, as we kept repopulating the entire database on Azure using the `DbInitializer` class, which led to this only being run when the service is started locally.
  
-A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are sent and recieved from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! project, leading to persistent data.
+A client can access the website using the link `https://bdsagroup14chirprazor.azurewebsites.net/` and will be able to see cheeps posted from other clients in real time. This is only possible because the project is so small, and only a small amount of requests/responses are sent and received from the Azure hosted webserver, every day. An SQLite database has also been configured for the webservice, and is accessible for read/write through the use of the Chirp! project, leading to persistent data.
 
 ![image](./Images/Architecture%20deployed%20application.jpg)
 
 ## User activities
 When an unauthorized user accesses the Chirp application they are met by the public timeline. A user can then choose one of two paths: registering as a new user or logging in with existing user credentials. Users can either create an account with an email or using their GitHub. Similarly users can log in with those credentials or with their GitHub account that they have linked.
 
-Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can log out anytime from their account. There is also a tab where it is possible to manage your account details. From here you can download your user data, delete your account, autenticate with Github (if you have not already), and edit account details.
+Once this step is completed users will be considered authorized and will gain access to many other features on the Chirp app. Users can like cheeps and choose to follow other 'Cheepers' whose cheeps will show up on their own private timeline if followed. Users can also access the timeline of other users, however, only the cheeps written by other users will show up, not the cheeps of the users which that user follows. Users can log out anytime from their account. There is also a tab where it is possible to manage your account details. From here you can download your user data, delete your account, authenticate with Github (if you have not already), and edit account details.
 
 The UML Diagram shows the order in which users can complete these various activities whether they start as an unauthenticated user or not.
 ![image](./Images/User%20activities%20diagram.jpg)
