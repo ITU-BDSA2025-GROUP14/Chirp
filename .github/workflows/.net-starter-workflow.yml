@@ -32,5 +32,11 @@ jobs:
       - name: Install Playwright Browsers
         run: pwsh test/Chirp.PlaywrightTests/bin/Debug/net8.0/playwright.ps1 install --with-deps
 
+      - name: Start App for E2E Tests
+        run: |
+          cd src/Chirp.Web
+          dotnet run --no-build &
+          sleep 10
+
       - name: Test (Playwright E2E)
         run: dotnet test test/Chirp.PlaywrightTests/Chirp.PlaywrightTests.csproj --no-build --verbosity normal
